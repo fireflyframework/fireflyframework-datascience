@@ -65,12 +65,13 @@ def arrow(x1: float, y1: float, x2: float, y2: float, color: str = LINE) -> str:
 
 
 def _svg(w: int, h: int, body: str, aria: str) -> str:
+    footer = _text(w - 14, h - 12, "✦ firefly-datascience", 10.5, SUB, 600, "end")
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" '
         f'role="img" aria-label="{_esc(aria)}">'
         f'<rect width="{w}" height="{h}" fill="#ffffff"/>'
         f'<rect x="0" y="0" width="{w}" height="6" fill="{CYAN}"/>'
-        f"{body}</svg>\n"
+        f"{body}{footer}</svg>\n"
     )
 
 
@@ -144,14 +145,104 @@ def diagram_genai_fusion() -> str:
     return _svg(860, 330, "".join(body), "GenAI and classical fusion")
 
 
+def _feedback(x1: float, x2: float, y: float, label: str) -> str:
+    mid = y + 56
+    return (
+        f'<path d="M{x1} {y} C {x1} {mid}, {x2} {mid}, {x2} {y}" stroke="{ACCENT_S}" stroke-width="2" '
+        f'fill="none" stroke-dasharray="5 4"/>'
+        f'<polygon points="{x2},{y} {x2 - 5},{y + 9} {x2 + 5},{y + 9}" fill="{ACCENT_S}"/>'
+        + _text((x1 + x2) / 2, mid + 4, label, 11.5, ACCENT_S, 700)
+    )
+
+
+def diagram_agentic_loop() -> str:
+    steps = [
+        ("Propose", "LLM"),
+        ("Code", "feature/pipeline"),
+        ("Execute", "sandboxed"),
+        ("Observe", "cross-validate"),
+        ("Verify", "judge ≠ ran"),
+        ("Select", "best verified"),
+    ]
+    body = [_text(490, 34, "Agentic ML-Engineering Loop", 18, TITLE, 800)]
+    x = 24
+    centers: list[float] = []
+    for i, (t, s) in enumerate(steps):
+        body.append(card(x, 92, 142, 60, t, s, accent=(i == 4)))
+        centers.append(x + 71)
+        if i < len(steps) - 1:
+            body.append(arrow(x + 142, 122, x + 162, 122))
+        x += 162
+    body.append(_feedback(centers[4], centers[0], 152, "reflect"))
+    return _svg(980, 230, "".join(body), "Agentic ML-engineering loop")
+
+
+def diagram_auto_configuration() -> str:
+    steps = [
+        ("Entry points", "the auto_configuration group"),
+        ("Discover", "load adapter classes"),
+        ("Evaluate conditions", "@conditional_on_*"),
+        ("Register beans", "DI container"),
+        ("Wiring summary", "ready"),
+    ]
+    body = [_text(430, 34, "Entry-Point Auto-Configuration", 18, TITLE, 800)]
+    y = 60
+    for i, (t, s) in enumerate(steps):
+        body.append(card(250, y, 360, 54, t, s, accent=(i == 2)))
+        if i < len(steps) - 1:
+            body.append(arrow(430, y + 54, 430, y + 68))
+        y += 68
+    return _svg(860, y + 14, "".join(body), "Entry-point auto-configuration flow")
+
+
+def diagram_security() -> str:
+    body = [_text(470, 34, "Secure-by-Default Execution", 18, TITLE, 800)]
+    body.append(card(40, 80, 230, 64, "Static analysis", "deny imports / dunder / exec", accent=True))
+    body.append(arrow(270, 112, 300, 112))
+    tiers = [
+        ("Monty", "deny-by-default (default)"),
+        ("Docker / E2B", "full ML, opt-in"),
+        ("HITL approval", "before non-sandboxed"),
+    ]
+    x = 300
+    for t, s in tiers:
+        body.append(card(x, 80, 200, 64, t, s))
+        if x < 690:
+            body.append(_text(x + 207, 116, "→", 16, SUB, 700))
+        x += 215
+    body.append(card(300, 168, 415, 50, "Cost / benefit gate", "keep GenAI only on measured lift"))
+    body.append(_text(470, 250, "The LLM never gets ambient capability; every step is gated and audited.", 12.5, SUB, 600))
+    return _svg(940, 280, "".join(body), "Secure-by-default execution tiers")
+
+
+def diagram_ecosystem() -> str:
+    body = [_text(430, 34, "Firefly Ecosystem", 18, TITLE, 800)]
+    body.append(card(60, 110, 200, 70, "Firefly Agentic", "GenAI · Pydantic AI"))
+    body.append(card(330, 100, 220, 88, "Firefly DataScience", "AutoML · this repo", accent=True))
+    body.append(card(620, 110, 200, 70, "PyFly", "structure / IoC"))
+    body.append(arrow(260, 145, 330, 145))
+    body.append(_text(295, 137, "reuses", 11, SUB, 600))
+    body.append(arrow(620, 150, 550, 150))
+    body.append(_text(585, 142, "mirrors", 11, SUB, 600))
+    body.append(_text(440, 232, "Hard-depends on Agentic; mirrors PyFly's hexagonal IoC.", 12.5, SUB, 600))
+    return _svg(860, 262, "".join(body), "Firefly ecosystem relationships")
+
+
 def main() -> None:
-    out = Path(__file__).resolve().parents[1] / "diagrams"
+    # Diagrams live under docs/ so they are served by the mkdocs site and resolve in GitHub's
+    # markdown rendering of docs/*.md (relative ``img/<name>.svg``). The README, at the repo root,
+    # references them as ``docs/img/<name>.svg``.
+    out = Path(__file__).resolve().parents[2] / "docs" / "img"
     out.mkdir(parents=True, exist_ok=True)
     figures = {
         "architecture.svg": diagram_architecture(),
         "hexagonal.svg": diagram_hexagonal(),
         "automl-loop.svg": diagram_automl_loop(),
         "genai-classical-fusion.svg": diagram_genai_fusion(),
+        "agentic-loop.svg": diagram_agentic_loop(),
+        "auto-configuration.svg": diagram_auto_configuration(),
+        "security.svg": diagram_security(),
+        "ecosystem.svg": diagram_ecosystem(),
     }
     for name, svg in figures.items():
         (out / name).write_text(svg)

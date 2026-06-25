@@ -38,6 +38,9 @@ wandb/
 # Brand asset build cache
 assets/.tools/.cache/
 
+# mkdocs build output
+site/
+
 # OS
 .DS_Store
 

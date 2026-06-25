@@ -1,6 +1,13 @@
+<p align="center">
+  <img src="img/banner.svg" alt="Firefly DataScience" width="100%">
+</p>
+
 # Firefly DataScience Documentation
 
 **AutoML that fuses GenAI with classical ML & Deep Learning — hexagonal, secure-by-default, native to the Firefly Framework.**
+
+> New here? Jump to the **[Tutorial](tutorial.md)** for a guided, runnable walkthrough, or
+> **[Configuring the LLM](llm-configuration.md)** to wire up GenAI.
 
 `fireflyframework-datascience` is a state-of-the-art Python metaframework for AutoML. It pairs **GenAI**
 — built on [`fireflyframework-agentic`](https://github.com/fireflyframework/fireflyframework-agentic),
@@ -14,7 +21,7 @@ GenAI step is gated behind a measured improvement over a seeded classical baseli
 governed, measurably-gated accelerator over a battle-tested classical core — never a black box.
 
 <p align="center">
-  <img src="../assets/diagrams/architecture.svg" alt="Firefly DataScience architecture" width="100%">
+  <img src="img/architecture.svg" alt="Firefly DataScience architecture" width="100%">
 </p>
 
 ## The 7 pillars

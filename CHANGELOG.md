@@ -5,6 +5,21 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ## [Unreleased]
 
+### Documentation & developer experience
+
+- **A tested, runnable [tutorial](docs/tutorial.md)** (`samples/tutorial.py`) — a guided end-to-end tour
+  (boot → load/validate → AutoML → GenAI feature engineering → agentic loop → serve) that runs offline
+  with no LLM key. A test guarantees it works.
+- **A thorough [LLM-configuration guide](docs/llm-configuration.md)** — providers + model strings, API
+  keys, enabling GenAI, cost/budget gating, secure execution, and offline/test usage.
+- **A professional [mkdocs Material docs site](https://fireflyframework.github.io/fireflyframework-datascience/)**
+  (`mkdocs.yml`, `docs` dependency group) — builds clean under `--strict`; deployed to GitHub Pages by a
+  new `Docs` workflow. All internal links fixed.
+- **Better visuals** — a refined `assets/banner.svg` (eyebrow, data-constellation motif) and an expanded
+  generated diagram set (8 diagrams: architecture, hexagonal, automl-loop, genai-fusion, agentic-loop,
+  auto-configuration, security, ecosystem) under `docs/img/`.
+- **Polished README** (compelling 5-line quick start, docs-site link) and a new **`CONTRIBUTING.md`**.
+
 ### AMLB benchmark (Tier-1)
 
 - **`benchmarks/amlb_benchmark.py`** — runs the AutoML facade across real OpenML-CC18 tasks (with

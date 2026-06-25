@@ -113,6 +113,6 @@ Tier 3 measures the *agent*, not a single estimator: given a task description an
 ## See also
 
 - [Datasets API](./datasets.md)
-- [Container & auto-configuration](./container.md)
-- [Task types](./task-types.md)
-- [Getting started](./getting-started.md)
+- [Container & auto-configuration](index.md)
+- [Task types](index.md)
+- [Getting started](quickstart.md)

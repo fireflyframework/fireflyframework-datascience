@@ -152,5 +152,5 @@ firefly-ds introspect --config-dir ./config --profile local --profile gpu
 - [Configuration](configuration.md) — `firefly-datascience.yaml`, profiles, and `FireflyDataScienceConfig`
 - [Datasets](datasets.md) — the `Dataset` container and `DatasetLoaderPort`
 - [AutoML](automl.md) — trainers, search policies, evaluators, and the leaderboard
-- [GenAI](genai.md) — fusing Firefly Agentic with classical ML
-- [CLI reference](cli.md) — every `firefly-ds` command
+- [GenAI](genai-features.md) — fusing Firefly Agentic with classical ML
+- [CLI reference](quickstart.md) — every `firefly-ds` command

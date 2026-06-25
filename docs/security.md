@@ -160,6 +160,6 @@ Be precise about what these controls do and do not give you:
 ## See also
 
 - [Configuration](configuration.md)
-- [Feature Engineering](features.md)
-- [GenAI Accelerators](genai.md)
-- [Getting Started](getting-started.md)
+- [Feature Engineering](genai-features.md)
+- [GenAI Accelerators](genai-features.md)
+- [Getting Started](quickstart.md)

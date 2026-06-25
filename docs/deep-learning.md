@@ -156,6 +156,6 @@ Start with `MLPTrainer` for a dependency-light neural baseline, reach for `TabPF
 ## See also
 
 - [Datasets](./datasets.md) — the `Dataset` container and `DatasetLoaderPort`
-- [Models](./models.md) — the fitted `Model` wrapper and `TrainerPort`
-- [Preprocessing](./preprocessing.md) — `build_pipeline`, shared by every adapter
-- [Core Types](./core-types.md) — `TaskType` and friends
+- [Models](automl.md) — the fitted `Model` wrapper and `TrainerPort`
+- [Preprocessing](automl.md) — `build_pipeline`, shared by every adapter
+- [Core Types](configuration.md) — `TaskType` and friends

@@ -1,0 +1,79 @@
+site_name: Firefly DataScience
+site_description: AutoML that fuses GenAI with classical ML & Deep Learning — built on Firefly Agentic.
+site_url: https://fireflyframework.github.io/fireflyframework-datascience/
+repo_url: https://github.com/fireflyframework/fireflyframework-datascience
+repo_name: fireflyframework/fireflyframework-datascience
+copyright: Copyright 2026 Firefly Software Foundation · Apache-2.0
+docs_dir: docs
+
+theme:
+  name: material
+  logo: img/banner.svg
+  favicon: img/banner.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: cyan
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: cyan
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.instant
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Quick Start: quickstart.md
+      - Tutorial: tutorial.md
+      - Configuration: configuration.md
+      - Configuring the LLM: llm-configuration.md
+  - Concepts:
+      - Architecture: architecture.md
+      - Datasets: datasets.md
+      - Classical AutoML: automl.md
+      - GenAI Feature Engineering: genai-features.md
+      - Agentic ML-Engineering Loop: agentic-loop.md
+      - Deep Learning & TabFM: deep-learning.md
+      - Serving & Lineage: serving.md
+      - Security Model: security.md
+      - Benchmarks: benchmarks.md
+  - Use case — Lumen: use-case-lumen.md
+
+not_in_nav: |
+  /superpowers/

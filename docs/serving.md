@@ -173,6 +173,6 @@ Without the `openlineage` client installed, construction raises `AdapterUnavaila
 
 ## See also
 
-- [Models & Training](models.md)
-- [Tuning](tuning.md)
-- [Getting Started](getting-started.md)
+- [Models & Training](automl.md)
+- [Tuning](automl.md)
+- [Getting Started](quickstart.md)

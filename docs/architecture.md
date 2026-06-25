@@ -4,7 +4,7 @@
 
 This page explains how the pieces fit together: the five layers, the ports-and-adapters (hexagonal) core, entry-point auto-configuration, the dependency-injection container, and the `FireflyDataScienceApplication` startup lifecycle.
 
-![Five-layer architecture](../assets/diagrams/architecture.svg)
+![Five-layer architecture](img/architecture.svg)
 
 ## The five layers
 
@@ -20,7 +20,7 @@ The core stays importable with **no** optional ML extra installed — vendor imp
 
 ## Hexagonal: ports and adapters
 
-![Ports and adapters](../assets/diagrams/hexagonal.svg)
+![Ports and adapters](img/hexagonal.svg)
 
 A **port** is a `Protocol` the domain depends on. An **adapter** is a concrete class that implements it. The container binds them by type annotation, so swapping an adapter never touches calling code.
 
@@ -164,7 +164,7 @@ Passing `auto_configurations=[...]` **replaces** discovery entirely (handy for h
 
 ## See also
 
-- [Getting started](./getting-started.md)
+- [Getting started](quickstart.md)
 - [Configuration](./configuration.md)
-- [Ports and adapters reference](./ports-and-adapters.md)
-- [Writing an auto-configuration](./auto-configuration.md)
+- [Ports and adapters reference](index.md)
+- [Writing an auto-configuration](index.md)

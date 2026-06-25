@@ -143,7 +143,7 @@ If the `openml` package is not installed, `load` raises `AdapterUnavailableError
 
 ## See also
 
-- [Core types](core.md) — `TaskType` and the rest of the core enums
-- [Adapters](adapters.md) — the adapter pattern and the `data` / `tabular` extras
-- [Feature engineering](features.md) — consumers of `Dataset.with_features`
-- [Getting started](getting-started.md)
+- [Core types](architecture.md) — `TaskType` and the rest of the core enums
+- [Adapters](architecture.md) — the adapter pattern and the `data` / `tabular` extras
+- [Feature engineering](genai-features.md) — consumers of `Dataset.with_features`
+- [Getting started](quickstart.md)
