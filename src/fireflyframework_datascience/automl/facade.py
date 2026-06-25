@@ -19,6 +19,7 @@ from fireflyframework_datascience.evaluation import MetricsEvaluatorPort
 from fireflyframework_datascience.explainability import ExplainerPort
 from fireflyframework_datascience.features import FeatureEngineerPort
 from fireflyframework_datascience.models import Model, TrainerPort
+from fireflyframework_datascience.models.calibration import CalibratorPort
 from fireflyframework_datascience.search import SearchPolicyPort
 from fireflyframework_datascience.tracking import TrackerPort
 from fireflyframework_datascience.validation import ValidatorPort
@@ -39,6 +40,8 @@ class AutoML:
         tracker: TrackerPort | None = None,
         explainer: ExplainerPort | None = None,
         feature_engineer: FeatureEngineerPort | None = None,
+        calibrate: bool = False,
+        calibrator: CalibratorPort | None = None,
         cv: int = 5,
         n_trials: int = 20,
         random_state: int = 42,
@@ -50,6 +53,8 @@ class AutoML:
         self._tracker = tracker
         self._explainer = explainer
         self._feature_engineer = feature_engineer
+        self._calibrate = calibrate
+        self._calibrator = calibrator
         self._cv = cv
         self._n_trials = n_trials
         self._random_state = random_state
@@ -67,6 +72,7 @@ class AutoML:
             tracker=container.resolve_optional(TrackerPort),
             explainer=container.resolve_optional(ExplainerPort),
             feature_engineer=container.resolve_optional(FeatureEngineerPort),
+            calibrator=container.resolve_optional(CalibratorPort),
             **overrides,
         )
 
@@ -111,7 +117,13 @@ class AutoML:
         assert best is not None
         _, best_trainer, best_params = best
         estimator = self._pipeline(best_trainer.make_estimator(task, best_params), dataset.X)
-        estimator.fit(dataset.X, dataset.y)
+        # Optional probability calibration of the winner (classification only): wrap + cross-fit so the
+        # served model's probabilities are trustworthy. Off by default; classical-first is unchanged.
+        calibrator = self._calibrator or (_default_calibrator() if self._calibrate else None)
+        if self._calibrate and calibrator is not None and calibrator.supports(task):
+            estimator = calibrator.calibrate(estimator, dataset.X, dataset.y, task)
+        else:
+            estimator.fit(dataset.X, dataset.y)
         model = Model(
             name=best_trainer.name,
             estimator=estimator,
@@ -212,6 +224,12 @@ def _default_search() -> SearchPolicyPort:
     from fireflyframework_datascience.search.adapters import DefaultSearchPolicy
 
     return DefaultSearchPolicy()
+
+
+def _default_calibrator() -> CalibratorPort:
+    from fireflyframework_datascience.models.calibration import SklearnCalibrator
+
+    return SklearnCalibrator()
 
 
 __all__ = ["AutoML"]
