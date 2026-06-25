@@ -20,6 +20,7 @@ from fireflyframework_datascience.explainability import ExplainerPort
 from fireflyframework_datascience.features import FeatureEngineerPort
 from fireflyframework_datascience.models import Model, TrainerPort
 from fireflyframework_datascience.models.calibration import CalibratorPort
+from fireflyframework_datascience.models.ensemble import EnsemblePort
 from fireflyframework_datascience.search import SearchPolicyPort
 from fireflyframework_datascience.tracking import TrackerPort
 from fireflyframework_datascience.validation import ValidatorPort
@@ -42,6 +43,9 @@ class AutoML:
         feature_engineer: FeatureEngineerPort | None = None,
         calibrate: bool = False,
         calibrator: CalibratorPort | None = None,
+        ensemble: bool = False,
+        ensemble_size: int = 3,
+        ensemble_impl: EnsemblePort | None = None,
         cv: int = 5,
         n_trials: int = 20,
         random_state: int = 42,
@@ -55,6 +59,9 @@ class AutoML:
         self._feature_engineer = feature_engineer
         self._calibrate = calibrate
         self._calibrator = calibrator
+        self._ensemble = ensemble
+        self._ensemble_size = ensemble_size
+        self._ensemble_impl = ensemble_impl
         self._cv = cv
         self._n_trials = n_trials
         self._random_state = random_state
@@ -73,6 +80,7 @@ class AutoML:
             explainer=container.resolve_optional(ExplainerPort),
             feature_engineer=container.resolve_optional(FeatureEngineerPort),
             calibrator=container.resolve_optional(CalibratorPort),
+            ensemble_impl=container.resolve_optional(EnsemblePort),
             **overrides,
         )
 
@@ -99,7 +107,7 @@ class AutoML:
 
         run = self._tracker.start_run(f"automl:{dataset.name}") if self._tracker else None
         leaderboard: list[LeaderboardEntry] = []
-        best: tuple[float, TrainerPort, dict[str, Any]] | None = None
+        evaluated: list[tuple[float, TrainerPort, dict[str, Any]]] = []
 
         for trainer in candidates:
             space = trainer.param_space(task) if self._n_trials > 1 else {}
@@ -111,25 +119,23 @@ class AutoML:
             )
             leaderboard.append(LeaderboardEntry(trainer.name, dict(result.best_params), result.best_score, metric))
             logger.info("AutoML candidate %s: cv %s=%.4f", trainer.name, metric, result.best_score)
-            if best is None or result.best_score > best[0]:
-                best = (result.best_score, trainer, dict(result.best_params))
+            evaluated.append((result.best_score, trainer, dict(result.best_params)))
 
-        assert best is not None
-        _, best_trainer, best_params = best
-        estimator = self._pipeline(best_trainer.make_estimator(task, best_params), dataset.X)
-        # Optional probability calibration of the winner (classification only): wrap + cross-fit so the
-        # served model's probabilities are trustworthy. Off by default; classical-first is unchanged.
+        evaluated.sort(key=lambda e: e[0], reverse=True)
+        # Pick the winner: a stacking ensemble of the top-k candidates (if ensemble=True) or the single
+        # best. Then optionally calibrate (classification only). Both are off by default — classical-first.
+        estimator, model_name, model_params = self._build_winner(evaluated, task, dataset.X)
         calibrator = self._calibrator or (_default_calibrator() if self._calibrate else None)
         if self._calibrate and calibrator is not None and calibrator.supports(task):
             estimator = calibrator.calibrate(estimator, dataset.X, dataset.y, task)
         else:
             estimator.fit(dataset.X, dataset.y)
         model = Model(
-            name=best_trainer.name,
+            name=model_name,
             estimator=estimator,
             task=task,
             feature_names=list(dataset.feature_names),
-            params=best_params,
+            params=model_params,
         )
         leaderboard.sort(key=lambda e: e.cv_score, reverse=True)
         self._track_results(run, model, leaderboard, metric)
@@ -145,6 +151,18 @@ class AutoML:
         )
 
     # -- internals --------------------------------------------------------
+
+    def _build_winner(
+        self, evaluated: list[tuple[float, TrainerPort, dict[str, Any]]], task: TaskType, X: Any
+    ) -> tuple[Any, str, dict[str, Any]]:
+        """The model to serve: a stacking ensemble of the top-k candidates, or the single best."""
+        if self._ensemble and len(evaluated) >= 2:
+            ensemble = self._ensemble_impl or _default_ensemble()
+            k = min(self._ensemble_size, len(evaluated))
+            bases = [(t.name, self._pipeline(t.make_estimator(task, p), X)) for _, t, p in evaluated[:k]]
+            return ensemble.build(bases, task), ensemble.name, {"members": [t.name for _, t, _ in evaluated[:k]]}
+        _, trainer, params = evaluated[0]
+        return self._pipeline(trainer.make_estimator(task, params), X), trainer.name, params
 
     def _objective(self, trainer: TrainerPort, task: TaskType, dataset: Dataset, scoring: str):
         from sklearn.model_selection import cross_val_score
@@ -230,6 +248,12 @@ def _default_calibrator() -> CalibratorPort:
     from fireflyframework_datascience.models.calibration import SklearnCalibrator
 
     return SklearnCalibrator()
+
+
+def _default_ensemble() -> EnsemblePort:
+    from fireflyframework_datascience.models.ensemble import StackingEnsemble
+
+    return StackingEnsemble()
 
 
 __all__ = ["AutoML"]

@@ -262,6 +262,21 @@ print(report.metrics["brier_score"])              # lower is better-calibrated
 default. The evaluator also reports **`average_precision`** (PR-AUC, important on imbalanced data) and
 **`brier_score`** (probability quality) for binary tasks alongside `roc_auc`/`accuracy`.
 
+## Ensembling
+
+Single-best selection leaves accuracy on the table. Pass `ensemble=True` to stack the **top-k**
+leaderboard candidates into one model via a cross-fit meta-learner:
+
+```python
+result = AutoML(ensemble=True, ensemble_size=3).fit(train)
+print(result.best_model.name)              # "stacking_ensemble"
+print(result.best_model.params["members"]) # the base learners that were stacked
+```
+
+The winner becomes an `EnsemblePort` (default: scikit-learn `StackingClassifier`/`StackingRegressor`
+over the top-`ensemble_size` trainers, with a logistic / ridge meta-learner). Off by default;
+`ensemble` and `calibrate` compose (the stack can itself be calibrated). DI-resolvable via `from_context`.
+
 ## See also
 
 - [Datasets and loaders](datasets.md) — build the `Dataset` you feed to `fit`.
