@@ -66,6 +66,7 @@ class FireflyDataScienceConfig(BaseSettings):
     profiles: list[str] = Field(default_factory=list)
     default_ml_framework: str = "sklearn"
     default_dataset_backend: str = "pandas"
+    tracking_enabled: bool = False
     model_registry_url: str | None = None
     feature_store_endpoint: str | None = None
     banner: BannerConfig = Field(default_factory=BannerConfig)

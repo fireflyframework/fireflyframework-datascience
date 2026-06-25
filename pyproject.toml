@@ -70,6 +70,13 @@ firefly-ds = "fireflyframework_datascience.cli.main:cli"
 # namespace). Each DS module self-registers its adapters here when present.
 [project.entry-points."firefly_datascience.auto_configuration"]
 core = "fireflyframework_datascience.core.auto_configuration:CoreAutoConfiguration"
+datasets = "fireflyframework_datascience.datasets.auto_configuration:DatasetsAutoConfiguration"
+models = "fireflyframework_datascience.models.auto_configuration:ModelsAutoConfiguration"
+evaluation = "fireflyframework_datascience.evaluation.auto_configuration:EvaluationAutoConfiguration"
+search = "fireflyframework_datascience.search.auto_configuration:SearchAutoConfiguration"
+validation = "fireflyframework_datascience.validation.auto_configuration:ValidationAutoConfiguration"
+tracking = "fireflyframework_datascience.tracking.auto_configuration:TrackingAutoConfiguration"
+automl = "fireflyframework_datascience.automl.auto_configuration:AutoMLAutoConfiguration"
 
 [dependency-groups]
 dev = [
@@ -97,9 +104,20 @@ force-exclude = true
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "TC", "PLC0415"]
-ignore = ["E501", "TC001", "TC002", "TC003", "UP040", "UP046", "UP047", "B008"]
+ignore = ["E501", "TC001", "TC002", "TC003", "UP040", "UP046", "UP047", "B008", "N803", "N806"]
 
 [tool.ruff.lint.per-file-ignores]
+# The DataScience domain layer lazy-imports optional heavy dependencies (pandas, scikit-learn,
+# xgboost, mlflow, …) inside methods so the core stays importable without any extra installed — the
+# deferred import IS the design. The foundation (core/container/application) keeps PLC0415 enforced.
+"src/fireflyframework_datascience/**/auto_configuration.py" = ["PLC0415"]
+"src/fireflyframework_datascience/datasets/**" = ["PLC0415"]
+"src/fireflyframework_datascience/models/**" = ["PLC0415"]
+"src/fireflyframework_datascience/evaluation/**" = ["PLC0415"]
+"src/fireflyframework_datascience/search/**" = ["PLC0415"]
+"src/fireflyframework_datascience/validation/**" = ["PLC0415"]
+"src/fireflyframework_datascience/tracking/**" = ["PLC0415"]
+"src/fireflyframework_datascience/automl/**" = ["PLC0415"]
 "tests/**" = ["PLC0415"]
 "samples/**" = ["PLC0415"]
 "benchmarks/**" = ["PLC0415"]

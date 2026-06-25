@@ -5,6 +5,30 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ## [Unreleased]
 
+### SP1 — Hexagonal ports + classical tabular core
+
+The classical AutoML heart: real, benchmarkable tabular AutoML behind swappable ports.
+
+- **Ports** (`@runtime_checkable` Protocols): `DatasetLoaderPort`, `TrainerPort`, `MetricsEvaluatorPort`,
+  `SearchPolicyPort`, `ValidatorPort`, `TrackerPort` / `RegistryPort`, `AutoMLBackendPort`.
+- **Datasets** — `Dataset` container (+ stratified `train_test_split`, `infer_task`); `SklearnDatasetLoader`
+  (offline toy/real sets) and `OpenMLDatasetLoader` (`data` extra).
+- **Trainers** — RandomForest, Linear (LogReg/Ridge), HistGradientBoosting always; XGBoost, LightGBM,
+  CatBoost when installed. Each declares a declarative hyperparameter `ParamSpace`.
+- **Evaluation** — `SklearnMetricsEvaluator` (accuracy/f1/precision/recall/roc_auc/log_loss; rmse/mae/r2)
+  with task-aware default metrics and CV scoring names.
+- **Search** — `DefaultSearchPolicy` (evaluate defaults) and `OptunaSearchPolicy` (seeded TPE — the LLM
+  may propose seeds/bounds, but classical HPO owns the search).
+- **Validation** — `BasicValidator` (nulls/constants/duplicates/target checks); optional `PanderaValidator`.
+- **Tracking** — `NoOpTracker` default; `MLflowTracker` (`tracking` extra).
+- **AutoML facade** — `AutoML.fit/predict` with leaderboard + cross-validation selection +
+  impute/scale/one-hot preprocessing; usable imperatively (`AutoML().fit`) and declaratively
+  (`AutoML.from_context(app)`). All adapters auto-wired via the `firefly_datascience.auto_configuration`
+  entry-point group.
+
+Gate: ruff clean, pyright 0 errors, 64 tests passing; real end-to-end AutoML on breast-cancer
+(roc_auc ≈ 0.98 holdout) and diabetes regression.
+
 ## [26.6.0] — 2026-06-25
 
 ### SP0 — Foundation & Firefly DNA
