@@ -5,6 +5,16 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ## [Unreleased]
 
+### SP6 — Documentation, diagrams & brand
+
+- **`docs/`** — a 13-page guide (index, architecture, quickstart, configuration, datasets, automl,
+  genai-features, agentic-loop, deep-learning, serving, security, benchmarks, use-case-lumen). Every
+  code example is validated against the real API.
+- **Diagrams** — `assets/tools/gen_diagrams.py` generates the WeasyPrint-safe SVG set (architecture,
+  hexagonal, automl-loop, genai-classical-fusion) in the teal brand palette.
+- **Banner & brand** — teal `assets/banner.svg` and `assets/README.md` documenting the palette + recipe.
+- **README** — architecture overview, embedded diagrams, and a documentation index.
+
 ### SP4 — Deep learning & tabular foundation models
 
 - **`DLTrainerPort` / `TabFMPort`** ports; **`MLPTrainer`** (scikit-learn MLP) is a *verified* neural

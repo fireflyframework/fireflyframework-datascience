@@ -27,9 +27,11 @@
 
 ---
 
-> **Status:** early build. SP0 (Foundation &amp; Firefly DNA) is the first delivered slice; the AutoML
-> core, GenAI feature engineering, the agentic ML-engineering loop, deep learning, serving, and the
-> documentation book follow as sub-projects SP1–SP6. See `docs/` (and the design spec) for the roadmap.
+> **Status:** active build. Delivered and green (ruff + pyright + 87 tests): **SP0** Foundation and
+> Firefly DNA · **SP1** classical tabular AutoML · **SP2** GenAI feature engineering · **SP3** the
+> agentic ML-engineering loop · **SP4** deep-learning / TabFM ports (verified sklearn-MLP; gated
+> Torch/TabPFN) · **SP5** serving, lineage and the Lumen credit-risk sample. **SP6** (documentation
+> book) is in progress. See [`docs/`](docs/index.md) for the full guide.
 
 ## What is this?
 
@@ -66,6 +68,44 @@ print(app.config.default_ml_framework)
 firefly-ds doctor       # check your environment & installed adapters
 firefly-ds introspect   # boot the app and show discovered auto-configurations
 ```
+
+## Architecture
+
+Five acyclic layers, mirroring `fireflyframework-agentic` with a **DataScience** layer inserted. Every
+ML/MLOps library is a swappable adapter behind a `Protocol` port, registered by **entry-point
+auto-configuration** and resolved through a type-hint **dependency-injection container**.
+
+<p align="center">
+  <img src="assets/diagrams/architecture.svg" alt="Firefly DataScience layered architecture" width="70%">
+</p>
+
+```
+Core → Agent (reused: agentic) → DataScience → Intelligence → Orchestration
+```
+
+The GenAI ↔ classical fusion is governed: the LLM proposes code; the classical engine measures; a
+cost/benefit gate keeps only what beats the baseline.
+
+<p align="center">
+  <img src="assets/diagrams/genai-classical-fusion.svg" alt="Governed GenAI and classical fusion" width="70%">
+</p>
+
+## Documentation
+
+| Guide | |
+|---|---|
+| [Quick Start](docs/quickstart.md) | install, boot, first AutoML run, the `firefly-ds` CLI |
+| [Architecture](docs/architecture.md) | layers, hexagonal ports, auto-configuration, the DI container |
+| [Configuration](docs/configuration.md) | env / `.env` / YAML / profiles precedence |
+| [Datasets](docs/datasets.md) | the `Dataset` container and loaders |
+| [Classical AutoML](docs/automl.md) | the `AutoML` facade, trainers, search, metrics |
+| [GenAI Feature Engineering](docs/genai-features.md) | propose → execute → measure → gate |
+| [Agentic ML-Engineering Loop](docs/agentic-loop.md) | propose → verify → reflect → select |
+| [Deep Learning & TabFM](docs/deep-learning.md) | MLP, TabPFN, the PyTorch integration point |
+| [Serving & Lineage](docs/serving.md) | in-process and gated servers, lineage |
+| [Security Model](docs/security.md) | secure code execution, sandbox tiers, prompt-injection defense |
+| [Benchmarks](docs/benchmarks.md) | the three-tier AMLB-anchored evaluation strategy |
+| [Use Case: Lumen Lending](docs/use-case-lumen.md) | the end-to-end credit-risk walkthrough |
 
 ## License
 
