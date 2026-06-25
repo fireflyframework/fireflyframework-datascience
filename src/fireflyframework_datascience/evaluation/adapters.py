@@ -19,6 +19,8 @@ _SCORING = {
     "f1": "f1_weighted",
     "roc_auc": "roc_auc",
     "roc_auc_ovr": "roc_auc_ovr_weighted",
+    # PR-AUC: the right selection target for imbalanced binary problems (where ROC-AUC over-credits).
+    "average_precision": "average_precision",
     "rmse": "neg_root_mean_squared_error",
     "mae": "neg_mean_absolute_error",
     "r2": "r2",

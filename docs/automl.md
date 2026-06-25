@@ -100,6 +100,21 @@ the `SklearnMetricsEvaluator`, and the `DefaultSearchPolicy`. A `validator` and 
 unless you supply them — when present, the validator runs first and raises on failure, and the tracker
 logs the winner's params, CV score, and model artifact.
 
+!!! tip "`cv` accepts a splitter, not just a fold count"
+
+    `cv` is passed straight to scikit-learn's `cross_val_score`, so beyond an `int` you can hand it any
+    splitter to control *how* folds are drawn — and to avoid silent leakage:
+
+    ```python
+    from sklearn.model_selection import TimeSeriesSplit, GroupKFold, StratifiedKFold
+
+    AutoML(cv=TimeSeriesSplit(n_splits=5))          # temporal data: forward-chaining, no future leakage
+    AutoML(cv=StratifiedKFold(5, shuffle=True))     # explicit stratification + shuffling control
+    AutoML(cv=GroupKFold(n_splits=5))               # grouped data: keep a group out of train and test
+    ```
+
+    The same splitter drives every candidate's cross-validation, so the leaderboard stays comparable.
+
 ### Wiring it up
 
 === "Imperative / notebook"
@@ -185,8 +200,9 @@ Both policies return a `SearchResult(best_params, best_score, n_trials)`. The se
 The default `SklearnMetricsEvaluator` (`name="sklearn"`) supplies CV scoring names and a panel of held-out
 metrics:
 
-- **Classification**: `accuracy`, `f1` (weighted), `precision` (weighted), `recall` (weighted), plus `roc_auc`
-  and `log_loss` when probabilities are available.
+- **Classification**: `accuracy`, `f1` (weighted), `precision` (weighted), `recall` (weighted), plus
+  `roc_auc` and `log_loss` when probabilities are available. For **binary** tasks the panel also reports
+  `average_precision` (PR-AUC) and `brier_score` (probability quality / calibration).
 - **Regression**: `rmse`, `mae`, `r2`.
 
 ```python
@@ -200,6 +216,16 @@ The leaderboard and CV objective use the *scoring* name, not the raw metric: `f1
 `f1_weighted` scorer, `rmse` to `neg_root_mean_squared_error`, and binary `roc_auc` stays `roc_auc` while
 multiclass `roc_auc` becomes `roc_auc_ovr_weighted`. This is why CV scores are always maximized — a lower
 RMSE shows up as a larger (less negative) `neg_root_mean_squared_error`.
+
+!!! tip "Select on PR-AUC for imbalanced binary problems"
+
+    ROC-AUC over-credits a classifier on heavily imbalanced data. Pass `metric="average_precision"` to
+    select the winner on **PR-AUC** instead — it is a first-class CV scorer, so the leaderboard, the
+    refit winner, and `result.cv_scoring` all reflect it:
+
+    ```python
+    result = AutoML().fit(train, metric="average_precision")   # winner chosen by PR-AUC, not accuracy
+    ```
 
 !!! tip "Two scores, one winner"
 
