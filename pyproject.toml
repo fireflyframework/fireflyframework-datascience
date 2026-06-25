@@ -1,0 +1,128 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fireflyframework-datascience"
+version = "26.6.0"
+description = "A state-of-the-art Python metaframework for AutoML that fuses GenAI (built on Firefly Agentic / Pydantic AI) with classical ML and Deep Learning — hexagonal, secure-by-default, native to the Firefly Framework."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Firefly Software Foundation" }]
+maintainers = [{ name = "Firefly Software Foundation" }]
+requires-python = ">=3.13"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Pydantic :: 2",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+keywords = ["automl", "machine-learning", "deep-learning", "genai", "agents", "data-science", "framework"]
+dependencies = [
+    # The single framework hard-dependency: the Firefly GenAI substrate.
+    "fireflyframework-agentic>=26.6.0",
+    "pydantic>=2.13,<3",
+    "pydantic-settings>=2.14.2,<3",
+    "pyyaml>=6.0.1",
+    "click>=8.1.7",
+    "rich>=13.7.0",
+    "typing-extensions>=4.12.0",
+]
+
+[project.optional-dependencies]
+# --- classical ML core ---
+tabular = ["pandas>=2.2.0", "numpy>=1.26.0", "scikit-learn>=1.5.0", "xgboost>=2.1.0", "lightgbm>=4.5.0", "catboost>=1.2.7", "optuna>=4.0.0"]
+tabfm = ["tabpfn>=2.0.0"]
+automl = ["autogluon.tabular>=1.2.0"]
+# --- deep learning ---
+dl = ["torch>=2.4.0", "lightning>=2.4.0", "torchvision>=0.19.0", "accelerate>=1.0.0"]
+nlp = ["transformers>=4.45.0", "datasets>=3.0.0", "peft>=0.13.0", "trl>=0.11.0"]
+# --- mlops ---
+tracking = ["mlflow>=2.17.0"]
+tracking-wandb = ["wandb>=0.18.0"]
+validation = ["pandera>=0.20.0"]
+featurestore = ["feast>=0.40.0"]
+serving = ["bentoml>=1.3.0"]
+serving-llm = ["vllm>=0.6.0"]
+lineage = ["openlineage-python>=1.23.0"]
+orchestration = ["apache-airflow>=2.10.0"]
+# --- data / benchmarks ---
+data = ["openml>=0.15.0", "polars>=1.9.0"]
+# --- genai accelerators (agentic extras) ---
+genai = [
+    "fireflyframework-agentic[script-execution,embeddings,openai-embeddings,vectorstores-chroma]>=26.6.0",
+]
+# convenience bundles
+automl-stack = ["fireflyframework-datascience[tabular,tabfm,automl,tracking,validation,data]"]
+full = ["fireflyframework-datascience[tabular,tabfm,automl,dl,nlp,tracking,validation,featurestore,serving,lineage,orchestration,data,genai]"]
+
+[project.scripts]
+firefly-ds = "fireflyframework_datascience.cli.main:cli"
+
+# Auto-configuration plugin discovery group (mirrors pyfly's pattern with our own
+# namespace). Each DS module self-registers its adapters here when present.
+[project.entry-points."firefly_datascience.auto_configuration"]
+core = "fireflyframework_datascience.core.auto_configuration:CoreAutoConfiguration"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+    "coverage[toml]>=7.6.0",
+    "ruff>=0.7.0",
+    "pyright>=1.1.380",
+]
+
+# Local sibling sources for development. For a published release these resolve
+# from PyPI; locally they resolve to the editable sibling checkouts.
+[tool.uv.sources]
+fireflyframework-agentic = { path = "../fireflyframework-agentic", editable = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fireflyframework_datascience"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+extend-exclude = ["assets"]
+force-exclude = true
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "TC", "PLC0415"]
+ignore = ["E501", "TC001", "TC002", "TC003", "UP040", "UP046", "UP047", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLC0415"]
+"samples/**" = ["PLC0415"]
+"benchmarks/**" = ["PLC0415"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["fireflyframework_datascience"]
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"
+include = ["src/fireflyframework_datascience"]
+exclude = ["tests/**", "samples/**", "benchmarks/**", "assets/**"]
+extraPaths = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "nightly: long-running tests (benchmarks, real LLM/GPU/Kaggle); excluded from the PR gate.",
+    "integration: real-backend tests (testcontainers / real ML libs); excluded from the fast gate.",
+]
+
+[tool.coverage.run]
+source = ["src/fireflyframework_datascience"]
+branch = true

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-label="Firefly DataScience — AutoML that fuses GenAI with classical ML and Deep Learning, built on Firefly Agentic">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1280" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#07131a"/>
+      <stop offset="0.55" stop-color="#0a1a1f"/>
+      <stop offset="1" stop-color="#08161a"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="42%" cy="34%" r="55%">
+      <stop offset="0" stop-color="#06b6d4" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="82%" cy="70%" r="50%">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wordmark" x1="84" y1="120" x2="640" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a5f3fc"/>
+      <stop offset="0.5" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="84" y1="0" x2="420" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#67e8f9"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <radialGradient id="dot" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#FFF9C1"/>
+      <stop offset="1" stop-color="#F68000"/>
+    </radialGradient>
+    <pattern id="motes" width="64" height="64" patternUnits="userSpaceOnUse">
+      <circle cx="8" cy="12" r="1" fill="#67e8f9" opacity="0.20"/>
+      <circle cx="44" cy="40" r="1.2" fill="#a5f3fc" opacity="0.16"/>
+      <circle cx="28" cy="54" r="0.9" fill="#f6a821" opacity="0.22"/>
+    </pattern>
+    <!-- shared family firefly glyph -->
+    <g id="fly">
+      <circle r="14" fill="#f6a821" opacity="0.10"/>
+      <circle r="8" fill="#ffc24a" opacity="0.20"/>
+      <circle r="3.8" fill="#ffd980" opacity="0.65"/>
+      <circle r="1.9" fill="#f3efff"/>
+    </g>
+    <!-- cyan sister firefly glyph -->
+    <g id="cfly">
+      <circle r="13" fill="#22d3ee" opacity="0.10"/>
+      <circle r="7" fill="#67e8f9" opacity="0.22"/>
+      <circle r="3.4" fill="#a5f3fc" opacity="0.7"/>
+      <circle r="1.7" fill="#f3fdff"/>
+    </g>
+  </defs>
+
+  <!-- backgrounds -->
+  <rect width="1280" height="320" fill="url(#sky)"/>
+  <rect width="1280" height="320" fill="url(#motes)"/>
+  <rect width="1280" height="320" fill="url(#glowA)"/>
+  <rect width="1280" height="320" fill="url(#glowB)"/>
+
+  <!-- firefly network: connecting edges (drawn first, behind nodes) -->
+  <g stroke="#67e8f9" stroke-width="1.1" fill="none" opacity="0.34">
+    <path d="M980 84 L1086 150"/>
+    <path d="M1086 150 L1012 226"/>
+    <path d="M1012 226 L1140 244"/>
+    <path d="M980 84 L1140 96"/>
+    <path d="M1086 150 L1180 200"/>
+  </g>
+
+  <!-- hero fireflies (right-side data constellation) -->
+  <use href="#cfly" transform="translate(980,84) scale(1.05)"/>
+  <use href="#fly"  transform="translate(1086,150) scale(1.15)"/>
+  <use href="#cfly" transform="translate(1012,226) scale(0.95)"/>
+  <use href="#fly"  transform="translate(1140,244) scale(0.85)"/>
+  <use href="#cfly" transform="translate(1140,96) scale(0.8)"/>
+  <use href="#fly"  transform="translate(1180,200) scale(0.7)"/>
+
+  <!-- accent glow-dot near wordmark -->
+  <circle cx="540" cy="118" r="6" fill="url(#dot)" opacity="0.9"/>
+
+  <!-- wordmark -->
+  <text x="80" y="176" font-family="Maven Pro, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-weight="800" font-size="84" letter-spacing="-1.8" fill="url(#wordmark)">Firefly DataScience</text>
+
+  <!-- accent rule -->
+  <rect x="84" y="214" width="320" height="2.6" rx="1.3" fill="url(#rule)"/>
+
+  <!-- tagline -->
+  <text x="84" y="252" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-weight="600" font-size="22.5" letter-spacing="0.3" fill="#d6f5fb">AutoML that fuses GenAI with classical ML &amp; Deep Learning.</text>
+
+  <!-- sub-tagline -->
+  <text x="84" y="284" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-weight="450" font-size="16.5" letter-spacing="0.2" fill="#7fa6ad">Hexagonal &amp; secure-by-default · built on Firefly Agentic &amp; Pydantic AI · the Firefly Framework</text>
+</svg>

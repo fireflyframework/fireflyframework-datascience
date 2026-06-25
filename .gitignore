@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.so
+
+# Environments
+.venv/
+.env
+.env.*
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Data science artifacts (never commit datasets / runs / models)
+data/
+datasets/
+mlruns/
+mlartifacts/
+wandb/
+*.ckpt
+*.pt
+*.onnx
+*.joblib
+*.pkl
+.ds_cache/
+
+# Brand asset build cache
+assets/.tools/.cache/
+
+# OS
+.DS_Store
+
+# Superpowers specs/plans are local-only (never committed)
+docs/superpowers/
