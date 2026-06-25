@@ -5,6 +5,7 @@ The contract we assert is the one users actually rely on: a global explanation m
 informative feature above an injected pure-noise column. We use scikit-learn's real ``breast_cancer``
 dataset plus a deterministic noise column whose importance must be ~0.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -100,4 +101,3 @@ def test_shap_explainer_global_and_local_on_real_data() -> None:
     assert len(local) == 3
     assert all(isinstance(item, LocalExplanation) for item in local)
     assert set(local[0].contributions) == set(dataset.feature_names)
-

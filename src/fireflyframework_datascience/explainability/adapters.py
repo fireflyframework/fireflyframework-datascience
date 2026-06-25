@@ -32,7 +32,7 @@ class PermutationImportanceExplainer:
     def explain_global(self, model: Model, dataset: Any) -> GlobalExplanation:
         from sklearn.inspection import permutation_importance
 
-        result = permutation_importance(
+        result: Any = permutation_importance(
             model.estimator,
             dataset.X,
             dataset.y,
@@ -59,11 +59,9 @@ class ShapExplainer:
 
     def __init__(self, *, max_samples: int = 200) -> None:
         try:
-            import shap  # noqa: F401
+            import shap  # type: ignore[import-not-found, import-untyped]  # noqa: F401
         except ImportError as exc:  # pragma: no cover - exercised only without the extra
-            raise AdapterUnavailableError(
-                "ShapExplainer requires the 'explain' extra: pip install 'fireflyframework-datascience[explain]'"
-            ) from exc
+            raise AdapterUnavailableError("ShapExplainer", "explain") from exc
         self._max_samples = max_samples
 
     def supports(self, model: Model) -> bool:
@@ -96,15 +94,15 @@ class ShapExplainer:
 
     def _shap_values(self, model: Model, X: Any) -> Any:
         import numpy as np
-        import shap
+        import shap  # type: ignore[import-not-found, import-untyped]
 
         sample = X.iloc[: self._max_samples] if hasattr(X, "iloc") else X[: self._max_samples]
-        # Transform through the pipeline's preprocessing so SHAP sees the estimator's real inputs is
-        # complex with one-hot columns; for the model-agnostic path we explain the whole pipeline.
+        # Explaining the whole pipeline (model-agnostic) keeps this correct whether or not the
+        # estimator has preprocessing steps with one-hot-expanded columns.
         explainer = shap.Explainer(model.estimator.predict, sample)
-        values = explainer(sample).values
+        explained: Any = explainer(sample)
         # binary/regression -> (n, f); some explainers return (n, f, classes): collapse to class-1/abs.
-        values = np.asarray(values)
+        values = np.asarray(explained.values)
         if values.ndim == 3:
             values = values[:, :, -1]
         return values

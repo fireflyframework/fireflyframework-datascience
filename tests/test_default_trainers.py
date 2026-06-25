@@ -4,6 +4,7 @@
 The docs/benchmarks advertise "+ XGBoost / LightGBM / CatBoost when installed"; this asserts the
 imperative path matches that claim (previously only the DI / agentic path did).
 """
+
 from __future__ import annotations
 
 import importlib.util

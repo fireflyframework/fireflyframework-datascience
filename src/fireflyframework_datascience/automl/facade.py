@@ -180,7 +180,11 @@ def _default_trainers() -> list[TrainerPort]:
     ]
     # Match the documented "+ XGBoost / LightGBM / CatBoost when installed" behaviour (the DI and
     # agentic paths already do this) by including each boosting trainer whose library is importable.
-    for lib, cls_name in (("xgboost", "XGBoostTrainer"), ("lightgbm", "LightGBMTrainer"), ("catboost", "CatBoostTrainer")):
+    for lib, cls_name in (
+        ("xgboost", "XGBoostTrainer"),
+        ("lightgbm", "LightGBMTrainer"),
+        ("catboost", "CatBoostTrainer"),
+    ):
         if importlib.util.find_spec(lib) is not None:
             trainers.append(getattr(adapters, cls_name)())
     return trainers

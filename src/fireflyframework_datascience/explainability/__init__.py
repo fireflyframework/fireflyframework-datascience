@@ -33,7 +33,10 @@ class GlobalExplanation:
         """A tidy ``feature/importance/std`` DataFrame, sorted by importance (descending)."""
         import pandas as pd
 
-        rows = [{"feature": n, "importance": v, "std": self.std.get(n, float("nan"))} for n, v in self.top(len(self.feature_importances))]
+        rows = [
+            {"feature": n, "importance": v, "std": self.std.get(n, float("nan"))}
+            for n, v in self.top(len(self.feature_importances))
+        ]
         return pd.DataFrame(rows)
 
 
