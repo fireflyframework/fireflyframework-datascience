@@ -101,14 +101,15 @@ The post-conditions are enforced in order: a non-`DataFrame` result raises `Feat
 
 !!! warning "Implementation status — what is enforced today"
 
-    Layers 1–2 (static analysis + the restricted in-process namespace) are **enforced now** and are
-    what protects you today. The sandbox *tiers* below (`docker`, `e2b`), `execution.timeout_seconds`,
-    and the `require_approval` HITL gate are currently **declared, validated configuration** — their
-    routing and enforcement are on the roadmap (a `CodeExecutorPort` with per-tier adapters and an
-    approval gate). Until that ships, the real isolation is the in-process `monty` / `local` path:
-    **do not run genuinely untrusted data through GenAI expecting container/microVM isolation yet.**
+    Layers 1–2 (static analysis + the restricted in-process namespace) are **enforced**.
+    `execution.timeout_seconds` is **enforced** (a wall-clock guard on the executor), and
+    `require_approval` is **enforced** when an approver is wired — fail-closed: code runs only if the
+    approver grants it. The container/microVM tiers (`docker`, `e2b`) are **not yet implemented and now
+    fail fast** rather than silently running in-process, so you can't mistake in-process for isolation.
+    The real isolation today remains the in-process `monty` / `local` path; for genuinely untrusted
+    data, wait for the container adapters (or supply your own `CodeExecutorPort`).
 
-Layers 1 and 2 run **in-process**. They block the obvious capabilities, but a determined escape against a CPython process is never something to bet sensitive data on. The configuration surface below lets you *declare* stronger isolation for untrusted data via `execution.sandbox` in `ExecutionConfig` (enforcement is roadmap, per the note above):
+Layers 1 and 2 run **in-process**. They block the obvious capabilities, but a determined escape against a CPython process is never something to bet sensitive data on. `execution.sandbox` selects the tier; the in-process tiers run the restricted executor below, while `docker` / `e2b` raise until their adapters land:
 
 ```python
 from fireflyframework_datascience.core.config import FireflyDataScienceConfig
@@ -151,7 +152,7 @@ The literal type for `sandbox` is exactly `Literal["monty", "docker", "e2b", "lo
 
     Profile overlays outrank the base `firefly-datascience.yaml`, so a `prod` profile can tighten isolation without touching the base file. See [Configuration](configuration.md) for the full precedence order.
 
-Beyond the strongest sandbox sits **HITL** (human-in-the-loop): `execution.require_approval` defaults to `True`, and the design's final tier is a person — not a policy — signing off on generated code before it runs. (Per the status note above, the approval-gate wiring is on the roadmap; today the field is declared and validated.)
+Beyond the strongest sandbox sits **HITL** (human-in-the-loop): `execution.require_approval` defaults to `True`, and the executor **enforces it** — when an approver is wired, generated code runs only if the approver grants it (and fail-closed if `require_approval` is set but no approver is available). A person, not a policy, signs off.
 
 !!! note "Defaults are the safe end of every axis"
     Out of the box, `sandbox = "monty"` (in-process restricted interpreter), `timeout_seconds = 60`, and `require_approval = True`. You loosen these deliberately — and only `local` removes isolation entirely.
@@ -163,7 +164,7 @@ The subtle attack is not the model going rogue on its own; it is a **column valu
 1. **Static analysis is content-blind.** It rejects `os`, `subprocess`, `socket`, dunder access, and `eval`/`exec`/`open` regardless of *why* the model wrote them — so a successful injection still produces code that gets rejected.
 2. **The restricted namespace** means even "clever" injected code has no I/O, no imports, no host reach.
 3. **The numeric-new-column contract** means injected code that tries to do anything other than add a numeric feature fails the post-conditions.
-4. **Sandboxing + HITL** are the *intended* outer tiers for genuinely untrusted data (route to `docker`/`e2b`, require approval). Their enforcement is on the roadmap (see the Layer 3 status note) — today, rely on points 1–3, which are enforced in-process.
+4. **HITL approval** is enforced for untrusted data (require an approver to sign off, fail-closed). The container/microVM tiers (`docker`/`e2b`) are not yet implemented and fail fast rather than running in-process — so points 1–3 plus approval are what protect you today.
 
 !!! warning "The framework does not read your data's meaning"
     Firefly cannot inspect or sanitize the *semantics* of your data. Prompt-injection defense rests on capability restriction and sandboxing, not on detecting malicious text. Treat data of unknown provenance as untrusted input: raise `execution.sandbox` and keep `require_approval` on.
