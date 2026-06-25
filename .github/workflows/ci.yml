@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - run: uv sync --group dev
+      - run: uv sync --extra tabular --extra data --extra validation --group dev
       - run: uv run ruff check src/ tests/
       - run: uv run ruff format --check src/ tests/
 
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - run: uv sync --group dev
+      - run: uv sync --extra tabular --extra data --extra validation --group dev
       - run: uv run pyright
 
   test:
@@ -44,7 +44,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv sync --group dev
+      - run: uv sync --extra tabular --extra data --extra validation --group dev
       - run: uv run pytest -q --tb=short -m "not nightly and not integration" --cov=src/fireflyframework_datascience --cov-report=term-missing --cov-report=xml
       - uses: actions/upload-artifact@v4
         if: matrix.python-version == '3.13'

@@ -93,10 +93,10 @@ dev = [
     "pyright>=1.1.380",
 ]
 
-# Local sibling sources for development. For a published release these resolve
-# from PyPI; locally they resolve to the editable sibling checkouts.
+# The Firefly GenAI substrate is co-developed in its own public repo (not yet on PyPI), so we resolve
+# it from git — this works both locally and in CI. Pin to a tag/rev for a reproducible release.
 [tool.uv.sources]
-fireflyframework-agentic = { path = "../fireflyframework-agentic", editable = true }
+fireflyframework-agentic = { git = "https://github.com/fireflyframework/fireflyframework-agentic", branch = "main" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fireflyframework_datascience"]
