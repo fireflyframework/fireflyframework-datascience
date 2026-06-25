@@ -2,10 +2,11 @@
 
 **Every sample is a single, runnable script that is covered by a test — so each one is guaranteed to work.**
 
-The four scripts live in
+The five scripts live in
 [`samples/`](https://github.com/fireflyframework/fireflyframework-datascience/tree/main/samples).
-Three run **offline with no LLM key** (the GenAI steps use deterministic stand-in proposers); one
-calls a **real LLM**. Pick the card that matches what you want to see, copy its run command, and go.
+Most run **offline with no LLM key** (the GenAI steps use deterministic stand-in proposers); two use a
+**real LLM** when a key is present. Pick the card that matches what you want to see, copy its run
+command, and go.
 
 !!! firefly "The pattern every sample demonstrates — the LLM proposes; the classical engine decides"
 
@@ -14,7 +15,7 @@ calls a **real LLM**. Pick the card that matches what you want to see, copy its 
     swap the LLM for a fixed proposer so the exact same gate runs without a key — see
     [GenAI Feature Engineering](genai-features.md) and the [Agentic Loop](agentic-loop.md).
 
-## The four samples
+## The five samples
 
 <div class="grid cards" markdown>
 
@@ -46,6 +47,22 @@ calls a **real LLM**. Pick the card that matches what you want to see, copy its 
     ```
 
     [:octicons-arrow-right-24: Use case: Lumen](use-case-lumen.md)
+
+-   :material-tune-vertical:{ .lg .middle } __`advanced_automl.py` — production-grade selection & trust__
+
+    ---
+
+    Every modeling/trust feature on the **real** `breast_cancer` data: a `StratifiedKFold` splitter,
+    **PR-AUC** selection, a **calibrated stacking ensemble**, deterministic **explainability** (global
+    importances), and a persisted **audit trail** of every GenAI gate decision. Runs **offline**, and
+    automatically uses a real LLM to propose features when a key is present. Needs the `tabular` extra
+    (`explain` adds SHAP).
+
+    ```bash
+    uv run python samples/advanced_automl.py
+    ```
+
+    [:octicons-arrow-right-24: Classical AutoML](automl.md)
 
 -   :material-database-outline:{ .lg .middle } __`industry_showcase.py` — real public data__
 
@@ -91,6 +108,7 @@ calls a **real LLM**. Pick the card that matches what you want to see, copy its 
     ```bash
     uv run python samples/tutorial.py            # the full guided tour
     uv run python samples/lumen_credit_risk.py   # focused credit-risk use case
+    uv run python samples/advanced_automl.py     # calibration, ensembling, PR-AUC, explainability, audit
     uv run python samples/industry_showcase.py   # real OpenML data (needs network)
     ```
 
@@ -99,7 +117,8 @@ calls a **real LLM**. Pick the card that matches what you want to see, copy its 
     ```bash
     export ANTHROPIC_API_KEY=sk-ant-...                                       # or OPENAI_API_KEY=...
     export FIREFLY_DATASCIENCE_GENAI__DEFAULT_MODEL=anthropic:claude-haiku-4-5  # optional; this is the default
-    uv run python samples/genai_llm_showcase.py
+    uv run python samples/genai_llm_showcase.py   # real LLM: feature engineering + agentic loop
+    uv run python samples/advanced_automl.py      # real LLM proposes features; calibrated ensemble + explainability
     ```
 
 !!! tip "The offline samples are the place to start"

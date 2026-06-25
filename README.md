@@ -189,8 +189,9 @@ Propose → execute (sandboxed) → observe → **verify** (correctness ≠ ran)
 | [Architecture](docs/architecture.md) | layers, hexagonal ports, auto-configuration, the DI container |
 | [Configuration](docs/configuration.md) | env / `.env` / YAML / profiles precedence |
 | [Datasets](docs/datasets.md) | the `Dataset` container and loaders |
-| [Classical AutoML](docs/automl.md) | the `AutoML` facade, trainers, search, metrics |
-| [GenAI Feature Engineering](docs/genai-features.md) | propose → execute → measure → gate |
+| [Classical AutoML](docs/automl.md) | the `AutoML` facade, trainers, search, metrics, calibration, ensembling, PR-AUC selection & CV strategies |
+| [Explainability](docs/explainability.md) | deterministic global + local feature importances (permutation, SHAP) |
+| [GenAI Feature Engineering](docs/genai-features.md) | propose → execute → measure → gate; the persisted audit trail |
 | [Agentic ML-Engineering Loop](docs/agentic-loop.md) | propose → verify → reflect → select |
 | [Deep Learning & TabFM](docs/deep-learning.md) | MLP, TabPFN, the PyTorch integration point |
 | [Serving & Lineage](docs/serving.md) | in-process and gated servers, lineage |

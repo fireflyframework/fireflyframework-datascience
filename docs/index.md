@@ -102,6 +102,15 @@ swappability, and security by default.
 
     [:octicons-arrow-right-24: Security model](security.md)
 
+-   :material-lightbulb-on-outline:{ .lg .middle } __Explainable & trustworthy__
+
+    ---
+
+    Deterministic global + local feature importances (permutation, SHAP) and **calibrated**
+    probabilities — so every model can be explained, and its scores trusted for real decisions.
+
+    [:octicons-arrow-right-24: Explainability](explainability.md)
+
 </div>
 
 ## Get started in 30 seconds
@@ -175,7 +184,7 @@ app = FireflyDataScienceApplication.run(config=config)
 -   :material-flask-outline:{ .middle } __[Classical AutoML](automl.md)__
 
     ---
-    The classical-first engine: train, score, select.
+    Train, score, select — with calibration, stacking ensembles, PR-AUC selection & CV strategies.
 
 -   :material-lightbulb-on-outline:{ .middle } __[Explainability](explainability.md)__
 
