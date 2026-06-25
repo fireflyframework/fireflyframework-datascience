@@ -7,7 +7,14 @@ trainer that supports the task (optionally tuning each one), and returns a fitte
 leaderboard. It is import-light: scikit-learn is only loaded when you actually call `fit`, so
 `from fireflyframework_datascience.automl import AutoML` stays cheap.
 
-![The AutoML loop](img/automl-loop.svg)
+!!! firefly "The LLM proposes; the classical engine decides"
+
+    `AutoML` is pure classical machine learning — deterministic, seeded, and reproducible. Where GenAI
+    enters elsewhere in the framework, it only ever *proposes* (seeds, bounds, candidate features);
+    this engine *decides* by cross-validated score. The search is owned by Optuna and scikit-learn,
+    never by a language model.
+
+<p align="center"><img src="img/automl-loop.svg" alt="The AutoML loop: validate, cross-validate candidates, tune, refit the winner" width="100%"></p>
 
 ## Quick start
 
@@ -38,11 +45,27 @@ result = AutoML().fit(train, task=TaskType.BINARY, metric="f1")
 
 For each trainer that `supports(task)`, `AutoML`:
 
-1. Builds the trainer's hyperparameter search space (skipped when `n_trials <= 1`).
+1. Builds the trainer's hyperparameter search space — but only when `n_trials > 1`; with `n_trials <= 1`
+   the space is empty and the search collapses to a single default-hyperparameter evaluation.
 2. Runs the search policy, whose objective wraps the estimator in a preprocessing pipeline and
    cross-validates it (`cross_val_score`, `cv` folds).
 3. Records a `LeaderboardEntry` with the best CV score.
-4. Refits the highest-scoring trainer on the full training data and wraps it as a `Model`.
+4. After all candidates are scored, refits the highest-scoring trainer on the full training data and
+   wraps it as a `Model`.
+
+```python
+space = trainer.param_space(task) if n_trials > 1 else {}   # (1)!
+result = search_policy.optimize(objective, space, n_trials=n_trials, seed=random_state)  # (2)!
+leaderboard.append(LeaderboardEntry(trainer.name, dict(result.best_params), result.best_score, metric))
+if best is None or result.best_score > best[0]:             # (3)!
+    best = (result.best_score, trainer, dict(result.best_params))
+```
+
+1. No tuning budget means no space to search — the policy evaluates the estimator's defaults once.
+2. The CV objective returns the mean fold score. A candidate that raises during CV is logged and scored
+   `-inf`, so one broken estimator never aborts the whole run.
+3. Selection is strictly by CV score (greater is better, always). The winning trainer is then refit on
+   `dataset.X, dataset.y` inside the same preprocessing pipeline.
 
 The preprocessing pipeline is built automatically from the column dtypes: numeric columns get median
 imputation + `StandardScaler`; categorical columns get most-frequent imputation + `OneHotEncoder`
@@ -71,20 +94,35 @@ result = automl.fit(train)
 ```
 
 The constructor accepts `trainers`, `evaluator`, `search_policy`, `validator`, `tracker`, plus the
-`cv`, `n_trials`, and `random_state` knobs. Anything left as `None` falls back to sensible defaults:
-`[RandomForestTrainer(), LinearTrainer(), HistGradientBoostingTrainer()]`, the `SklearnMetricsEvaluator`,
-and the `DefaultSearchPolicy`.
+`cv`, `n_trials`, and `random_state` knobs (defaults `cv=5`, `n_trials=20`, `random_state=42`). Anything
+left as `None` falls back to sensible defaults: `[RandomForestTrainer(), LinearTrainer(), HistGradientBoostingTrainer()]`,
+the `SklearnMetricsEvaluator`, and the `DefaultSearchPolicy`. A `validator` and `tracker` stay `None`
+unless you supply them — when present, the validator runs first and raises on failure, and the tracker
+logs the winner's params, CV score, and model artifact.
 
-### DI-wired construction
+### Wiring it up
 
-In an application, resolve the components from a started `ApplicationContext` instead of wiring them by hand:
+=== "Imperative / notebook"
 
-```python
-automl = AutoML.from_context(app, cv=10, n_trials=50)
-```
+    Construct the engine by hand and call `fit` directly — ideal for exploration:
 
-`from_context` pulls every registered `TrainerPort` from the container and resolves the optional
-evaluator, search policy, validator, and tracker. Keyword `overrides` win over the resolved components.
+    ```python
+    automl = AutoML(cv=10, n_trials=50)
+    result = automl.fit(train)
+    ```
+
+=== "Declarative / DI"
+
+    In an application, resolve the components from a started `ApplicationContext` instead of wiring
+    them by hand:
+
+    ```python
+    automl = AutoML.from_context(app, cv=10, n_trials=50)
+    ```
+
+    `from_context` pulls every registered `TrainerPort` from the container and resolves the optional
+    evaluator, search policy, validator, and tracker. Keyword `overrides` win over the resolved
+    components, and missing evaluator/search policy fall back to the same defaults as the constructor.
 
 ## Trainers
 
@@ -104,10 +142,17 @@ The boosting-library trainers (`xgboost`, `lightgbm`, `catboost`) import their b
 pay for the extra you install. A trainer exposes three methods used by the engine:
 
 ```python
-trainer.supports(task)            # -> bool
-trainer.make_estimator(task, params)   # -> unfitted estimator
-trainer.param_space(task)         # -> ParamSpace
+trainer.supports(task)                 # -> bool
+trainer.make_estimator(task, params)   # -> unfitted estimator (sensible defaults merged with params)
+trainer.param_space(task)              # -> ParamSpace
 ```
+
+!!! note "Defaults are baked in, not magic"
+
+    `make_estimator` merges your `params` over each trainer's defaults — for example `RandomForestTrainer`
+    starts from `n_estimators=200, n_jobs=-1, random_state=42`, and `HistGradientBoostingTrainer` from
+    `learning_rate=0.1, max_iter=200, random_state=42`. The `param_space` only widens the dimensions worth
+    tuning (e.g. `n_estimators`, `max_depth`, `max_features` for random forest).
 
 ## Search policies
 
@@ -115,9 +160,9 @@ A search policy optimizes the cross-validation objective over a trainer's `Param
 "greater is better" (the evaluator maps loss-style metrics to negated sklearn scorers).
 
 - **`DefaultSearchPolicy`** (`name="default"`) evaluates the estimator's default hyperparameters once — fast
-  and fully deterministic. This is the engine default.
+  and fully deterministic. This is the engine default, and it reports `n_trials=1`.
 - **`OptunaSearchPolicy`** (`name="optuna"`) runs seeded Bayesian optimization (TPE). The space spec drives
-  the suggestions; if the space is empty it degrades to a single default evaluation.
+  the suggestions; if the space is empty it degrades to a single default evaluation (`n_trials=1`).
 
 ```python
 from fireflyframework_datascience.search.adapters import OptunaSearchPolicy
@@ -132,24 +177,35 @@ result = OptunaSearchPolicy().optimize(objective, space, n_trials=40, seed=42)
 print(result.best_params, result.best_score, result.n_trials)
 ```
 
-Both policies return a `SearchResult(best_params, best_score, n_trials)`. The seeded sampler keeps the search
-reproducible — classical HPO owns the search, not an LLM.
+Both policies return a `SearchResult(best_params, best_score, n_trials)`. The seeded TPE sampler
+(`TPESampler(seed=seed)`) keeps the search reproducible — classical HPO owns the search, not an LLM.
 
 ## Metrics
 
 The default `SklearnMetricsEvaluator` (`name="sklearn"`) supplies CV scoring names and a panel of held-out
 metrics:
 
-- **Classification**: `accuracy`, `f1` (weighted), `precision`, `recall`, plus `roc_auc` and `log_loss` when
-  probabilities are available.
+- **Classification**: `accuracy`, `f1` (weighted), `precision` (weighted), `recall` (weighted), plus `roc_auc`
+  and `log_loss` when probabilities are available.
 - **Regression**: `rmse`, `mae`, `r2`.
 
 ```python
 ev = result.evaluator
-ev.default_metric(result.task)        # "roc_auc" for binary
+ev.default_metric(result.task)        # "roc_auc" for binary, "accuracy" multiclass, "rmse" regression
 ev.scoring_name(result.task, "f1")    # "f1_weighted" (the CV scorer)
 ev.greater_is_better("rmse")          # False
 ```
+
+The leaderboard and CV objective use the *scoring* name, not the raw metric: `f1` maps to the
+`f1_weighted` scorer, `rmse` to `neg_root_mean_squared_error`, and binary `roc_auc` stays `roc_auc` while
+multiclass `roc_auc` becomes `roc_auc_ovr_weighted`. This is why CV scores are always maximized — a lower
+RMSE shows up as a larger (less negative) `neg_root_mean_squared_error`.
+
+!!! tip "Two scores, one winner"
+
+    `result.metric` is the human-facing metric name (e.g. `roc_auc`); `result.cv_scoring` is the sklearn
+    scoring string actually used for cross-validation. The leaderboard's `cv_score` is the mean CV score
+    under that scorer, and `evaluate(test)` recomputes the full panel on held-out data.
 
 ## The `AutoMLResult` API
 
@@ -157,10 +213,11 @@ ev.greater_is_better("rmse")          # False
 
 ```python
 result.best_model        # Model: name, estimator, task, feature_names, params
-result.best_score        # top leaderboard cv_score
+result.best_score        # leaderboard[0].cv_score (the top CV score)
 result.leaderboard       # list[LeaderboardEntry] sorted best-first
 result.metric            # primary metric name
 result.task              # TaskType
+result.cv_scoring        # sklearn scoring string used during CV
 
 result.predict(test.X)               # winner predictions
 result.predict_proba(test.X)         # class probabilities (classification)
@@ -171,13 +228,28 @@ print(result.leaderboard_table())    # one line per candidate
 ```
 
 Each `LeaderboardEntry` holds `model_name`, `params`, `cv_score`, and `metric`, and prints as a tidy
-`model_name  metric=score` line. `evaluate` automatically passes probabilities through for classification
-when the winning estimator exposes `predict_proba`.
+`model_name  metric=score` line (the name is left-padded to 24 columns, the score to 4 decimals).
+`best_score` is a property that reads the top entry, so it always agrees with the first row of the table.
+`evaluate` automatically passes probabilities through for classification when the winning estimator exposes
+`predict_proba`.
+
+!!! success "Expected"
+
+    `result.leaderboard_table()` on the breast-cancer quick-start prints one line per candidate, sorted
+    best CV score first. Each line is the `LeaderboardEntry.__str__` format — the trainer `name`
+    left-padded to 24 columns, then `metric=score` to 4 decimals (values vary slightly by environment
+    and library versions):
+
+    ```text
+    hist_gradient_boosting   roc_auc=0.9921
+    random_forest            roc_auc=0.9907
+    linear                   roc_auc=0.9886
+    ```
 
 ## See also
 
-- [Datasets and loaders](./datasets.md)
-- [Models and trainers](automl.md)
-- [Hyperparameter tuning](index.md)
-- [Evaluation and metrics](index.md)
-- [GenAI + classical fusion](genai-features.md)
+- [Datasets and loaders](datasets.md) — build the `Dataset` you feed to `fit`.
+- [GenAI + classical fusion](genai-features.md) — how the LLM proposes and this engine decides.
+- [The agentic loop](agentic-loop.md) — the cost-benefit gate around GenAI proposals.
+- [Serving the winner](serving.md) — deploy `result.best_model`.
+- [Benchmarks](benchmarks.md) — measured leaderboard results on real datasets.
