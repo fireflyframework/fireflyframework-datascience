@@ -172,8 +172,8 @@ Exact numbers vary with your scikit-learn version, but the shape is stable: **`d
 
 ## See also
 
-- [GenAI Feature Engineering](genai-feature-engineering.md)
+- [GenAI Feature Engineering](genai-features.md)
 - [AutoML](automl.md)
 - [Datasets](datasets.md)
 - [Serving](serving.md)
-- [Getting Started](getting-started.md)
+- [Getting Started](quickstart.md)

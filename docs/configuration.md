@@ -175,6 +175,6 @@ export FIREFLY_DATASCIENCE_BANNER__MODE=OFF
 
 ## See also
 
-- [Getting Started](./getting-started.md)
-- [GenAI Accelerator](./genai.md)
-- [Code Execution](./execution.md)
+- [Getting Started](quickstart.md)
+- [GenAI Accelerator](genai-features.md)
+- [Code Execution](security.md)

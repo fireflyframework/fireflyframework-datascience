@@ -7,7 +7,7 @@ trainer that supports the task (optionally tuning each one), and returns a fitte
 leaderboard. It is import-light: scikit-learn is only loaded when you actually call `fit`, so
 `from fireflyframework_datascience.automl import AutoML` stays cheap.
 
-![The AutoML loop](../assets/diagrams/automl-loop.svg)
+![The AutoML loop](img/automl-loop.svg)
 
 ## Quick start
 
@@ -177,7 +177,7 @@ when the winning estimator exposes `predict_proba`.
 ## See also
 
 - [Datasets and loaders](./datasets.md)
-- [Models and trainers](./models.md)
-- [Hyperparameter tuning](./tuning.md)
-- [Evaluation and metrics](./evaluation.md)
-- [GenAI + classical fusion](./genai.md)
+- [Models and trainers](automl.md)
+- [Hyperparameter tuning](index.md)
+- [Evaluation and metrics](index.md)
+- [GenAI + classical fusion](genai-features.md)

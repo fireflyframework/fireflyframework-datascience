@@ -165,6 +165,6 @@ loop = AgenticAutoML(
 ## See also
 
 - [Datasets](datasets.md) — the `Dataset` the loop searches over.
-- [Models & trainers](models.md) — the trainer registry candidates draw from.
-- [Evaluation](evaluation.md) — metrics, scoring, and the trivial baseline.
-- [Preprocessing](preprocessing.md) — the pipeline wrapped around every candidate.
+- [Models & trainers](automl.md) — the trainer registry candidates draw from.
+- [Evaluation](automl.md) — metrics, scoring, and the trivial baseline.
+- [Preprocessing](automl.md) — the pipeline wrapped around every candidate.

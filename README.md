@@ -27,11 +27,11 @@
 
 ---
 
-> **Status:** active build. Delivered and green (ruff + pyright + 87 tests): **SP0** Foundation and
-> Firefly DNA · **SP1** classical tabular AutoML · **SP2** GenAI feature engineering · **SP3** the
-> agentic ML-engineering loop · **SP4** deep-learning / TabFM ports (verified sklearn-MLP; gated
-> Torch/TabPFN) · **SP5** serving, lineage and the Lumen credit-risk sample. **SP6** (documentation
-> book) is in progress. See [`docs/`](docs/index.md) for the full guide.
+> **Status:** all sub-projects delivered and green (ruff · pyright · 90+ tests). Classical tabular
+> AutoML · GenAI feature engineering · the agentic ML-engineering loop · deep learning (PyTorch
+> Lightning) + NLP (HuggingFace) + vision · TabFM · serving · the OpenML-AMLB benchmark harness.
+> **New here? Start with the [Tutorial](docs/tutorial.md)** or browse the
+> **[documentation site](https://fireflyframework.github.io/fireflyframework-datascience/)**.
 
 ## What is this?
 
@@ -53,21 +53,32 @@ swappability, and security by default.
 ## Quick start
 
 ```bash
-uv add fireflyframework-datascience            # core
-uv add 'fireflyframework-datascience[automl-stack]'   # + classical AutoML + tracking
+uv add 'fireflyframework-datascience[tabular]'        # classical AutoML
+# or:  uv add 'fireflyframework-datascience[automl-stack]'   # + TabPFN, MLflow, OpenML
 ```
+
+Train, rank, and evaluate models in five lines:
 
 ```python
-from fireflyframework_datascience import FireflyDataScienceApplication
+from fireflyframework_datascience.automl import AutoML
+from fireflyframework_datascience.datasets.adapters import SklearnDatasetLoader
 
-app = FireflyDataScienceApplication.run()   # prints banner + wiring summary
-print(app.config.default_ml_framework)
+train, test = SklearnDatasetLoader().load("breast_cancer").train_test_split()
+result = AutoML().fit(train)               # cross-validates candidates, picks the winner
+print(result.leaderboard_table())          # random_forest / linear / hist_gradient_boosting …
+print(result.evaluate(test))               # holdout roc_auc ≈ 0.98
 ```
+
+Boot it as a Firefly application (auto-configuration + dependency injection), or use the CLI:
 
 ```bash
 firefly-ds doctor       # check your environment & installed adapters
 firefly-ds introspect   # boot the app and show discovered auto-configurations
 ```
+
+Add a real LLM for GenAI feature engineering and the agentic loop — see
+[Configuring the LLM](docs/llm-configuration.md). The full guided walkthrough is the
+[Tutorial](docs/tutorial.md).
 
 ## Architecture
 
@@ -76,7 +87,7 @@ ML/MLOps library is a swappable adapter behind a `Protocol` port, registered by 
 auto-configuration** and resolved through a type-hint **dependency-injection container**.
 
 <p align="center">
-  <img src="assets/diagrams/architecture.svg" alt="Firefly DataScience layered architecture" width="70%">
+  <img src="docs/img/architecture.svg" alt="Firefly DataScience layered architecture" width="70%">
 </p>
 
 ```
@@ -87,14 +98,18 @@ The GenAI ↔ classical fusion is governed: the LLM proposes code; the classical
 cost/benefit gate keeps only what beats the baseline.
 
 <p align="center">
-  <img src="assets/diagrams/genai-classical-fusion.svg" alt="Governed GenAI and classical fusion" width="70%">
+  <img src="docs/img/genai-classical-fusion.svg" alt="Governed GenAI and classical fusion" width="70%">
 </p>
 
 ## Documentation
 
+📖 **Full docs site:** <https://fireflyframework.github.io/fireflyframework-datascience/>
+
 | Guide | |
 |---|---|
+| [Tutorial](docs/tutorial.md) | the guided end-to-end walkthrough (runs offline; tested) |
 | [Quick Start](docs/quickstart.md) | install, boot, first AutoML run, the `firefly-ds` CLI |
+| [Configuring the LLM](docs/llm-configuration.md) | providers, API keys, model selection, cost gating |
 | [Architecture](docs/architecture.md) | layers, hexagonal ports, auto-configuration, the DI container |
 | [Configuration](docs/configuration.md) | env / `.env` / YAML / profiles precedence |
 | [Datasets](docs/datasets.md) | the `Dataset` container and loaders |

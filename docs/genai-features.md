@@ -8,7 +8,7 @@ cross-validation lift of each one, and a `CostBenefitGate` keeps a feature only 
 beats the current baseline by a measurable margin. The LLM never touches the score — it
 just generates candidates, and the data does the rest.
 
-![GenAI proposes, classical CV decides](../assets/diagrams/genai-classical-fusion.svg)
+![GenAI proposes, classical CV decides](img/genai-classical-fusion.svg)
 
 ## The loop
 
@@ -169,6 +169,6 @@ engineer = GenAIFeatureEngineer(
 ## See also
 
 - [Datasets](datasets.md)
-- [Evaluation & Metrics](evaluation.md)
-- [Core Types](core-types.md)
+- [Evaluation & Metrics](automl.md)
+- [Core Types](configuration.md)
 - [AutoML Pipeline](automl.md)
