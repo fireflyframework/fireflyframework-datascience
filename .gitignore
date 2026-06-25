@@ -22,12 +22,14 @@ dist/
 htmlcov/
 coverage.xml
 
-# Data science artifacts (never commit datasets / runs / models)
-data/
-datasets/
-mlruns/
-mlartifacts/
-wandb/
+# Data science artifacts (never commit downloaded datasets / runs / models).
+# NOTE: anchored to the repo root with a leading slash so these do NOT match the source modules
+# src/fireflyframework_datascience/datasets/ etc.
+/data/
+/datasets/
+/mlruns/
+/mlartifacts/
+/wandb/
 *.ckpt
 *.pt
 *.onnx
