@@ -5,6 +5,9 @@ repo_url: https://github.com/fireflyframework/fireflyframework-datascience
 repo_name: fireflyframework/fireflyframework-datascience
 copyright: Copyright 2026 Firefly Software Foundation · Apache-2.0
 docs_dir: docs
+# Flat .html URLs (not directory URLs) so relative image paths in raw HTML (<img src="img/...">)
+# resolve from the site root on every page — fixes diagrams not rendering on GitHub Pages.
+use_directory_urls: false
 
 theme:
   name: material

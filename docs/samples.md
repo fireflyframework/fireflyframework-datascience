@@ -44,6 +44,21 @@ The model proposes; the deterministic engine measures; the gate keeps only what 
 unverified is adopted — exactly the governance described in [GenAI Feature Engineering](genai-features.md)
 and the [Agentic Loop](agentic-loop.md).
 
+
+## Benchmark scenarios
+
+The [`benchmarks/`](https://github.com/fireflyframework/fireflyframework-datascience/tree/main/benchmarks)
+directory holds the evaluation harnesses; all results live in
+[`benchmarks/RESULTS.md`](https://github.com/fireflyframework/fireflyframework-datascience/blob/main/benchmarks/RESULTS.md).
+
+| Script | What it measures |
+|---|---|
+| `automl_benchmark.py` | Tier-2 offline smoke suite (scikit-learn datasets) |
+| `amlb_benchmark.py` | Tier-1 OpenML-CC18 (AMLB-style), real categorical data |
+| `scientific_eval.py` | **Nested 5-fold CV** vs fixed single models + Wilcoxon significance (unbiased) |
+| `genai_value.py` | **Controlled ablation** of GenAI feature engineering with a real LLM (+ cost) |
+| `beat_baseline.py` | A quick cross-validated head-to-head vs a default baseline |
+
 ## See also
 
 - [Tutorial](tutorial.md) · [Configuring the LLM](llm-configuration.md) · [Benchmarks](benchmarks.md) ·

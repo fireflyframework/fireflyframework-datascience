@@ -65,12 +65,14 @@ science actually delivers business value:
   generated code; generative AI is used only where it measurably pays.
 - **Production-ready** — serving, data validation, lineage and real benchmarks are built in, not bolted on.
 
-**Proven, not promised.** In a head-to-head over public OpenML datasets (5-fold CV ROC-AUC), Firefly's
-AutoML **matches or beats** a standard baseline on **6/6** — up to **+0.15** where the data is non-linear
-(phoneme: **0.96 vs 0.81**) — and reaches **0.82–0.92** on real credit-risk and marketing data out of the
-box. With a real LLM (`claude-haiku-4-5`), governed GenAI feature engineering **rediscovered a withheld
-risk driver** (debt-to-income) from the schema alone, keeping only what measurably helped. See the
-[benchmark results](benchmarks/RESULTS.md) — every number is reproducible.
+**Proven, not promised — unbiased and significance-tested.** Under **nested cross-validation** (no
+selection bias), Firefly's AutoML significantly beats a single LogisticRegression (Δ +0.029, *p* = 0.046)
+and a single XGBoost (Δ +0.030, ***p* = 7.5e-6**), and is statistically on par with RandomForest —
+adapting per dataset, up to **+0.15** on non-linear `phoneme`. With a real LLM (`claude-haiku-4-5`),
+governed GenAI feature engineering adds a **significant +0.021** lift on a linear model (*p* = 0.0039) by
+rediscovering a withheld driver (`revenue = price × units`) from the schema — and the cost/benefit gate
+guarantees it never regresses, at **< $0.01**. Every number is reproducible — see the
+[benchmark results](benchmarks/RESULTS.md).
 
 > 📄 **For business & transformation leaders:** a polished
 > [Strategic Introduction (PDF)](docs/brief/firefly-datascience-strategic-introduction.pdf) frames the

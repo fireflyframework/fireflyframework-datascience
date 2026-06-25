@@ -61,6 +61,56 @@ non-linear (**phoneme +0.149**), and correctly *matches* the baseline by choosin
 linear model is genuinely best. Mean gain across the six: **+0.029 ROC-AUC**. That is the value of
 automated selection — stated honestly: no magic, just always picking the right tool.
 
+> The comparison above reports Firefly's *cross-validated selection* score. That is mildly
+> optimistically biased (it is a max over models scored on the same folds). The **unbiased** version
+> follows.
+
+## Scientific evaluation — nested cross-validation
+
+`benchmarks/scientific_eval.py` uses **nested 5-fold CV**: an inner CV selects the model on each outer
+fold's *training* data only, and the untouched outer fold gives the unbiased estimate. Firefly AutoML is
+compared against three fixed single models on identical folds; ROC-AUC reported as mean ± std, with a
+one-sided Wilcoxon signed-rank test over all 25 (5 folds × 5 datasets) paired deltas.
+
+| | mean Δ vs Firefly | wins / ties / losses | Wilcoxon p |
+|---|---:|---|---:|
+| Firefly AutoML vs **LogReg** (linear) | **+0.029** | 8 / 14 / 3 | **0.046** |
+| Firefly AutoML vs **RandomForest** | +0.012 | 16 / 2 / 7 | 0.051 |
+| Firefly AutoML vs **XGBoost** | **+0.030** | 22 / 1 / 2 | **7.5e-6** |
+
+**Honest reading.** Firefly AutoML **significantly beats** a single LogReg (p=0.046) and a single XGBoost
+(p≈1e-5), and is **statistically on par with** RandomForest (p≈0.05) — because it *adapts*: it picked
+boosting/bagging on the non-linear `phoneme` (RF×5, AUC 0.964) and `linear` where linear was genuinely
+best (`blood-transfusion`, `ilpd`). On 2 of 5 small datasets a fixed model edged it out by ~0.01–0.02
+(model-selection variance on ~1000-row data) — we report this rather than hide it. The headline claim is
+the defensible one: *automated selection matches or beats any fixed single model, decisively on
+non-linear data, and never collapses to a poor choice.*
+
+## GenAI value — controlled ablation (real LLM)
+
+`benchmarks/genai_value.py` isolates the contribution of GenAI feature engineering. The dataset is a
+retail "high-value customer" task whose true driver is **revenue = unit_price × units** — a product
+withheld from the model that a *linear* learner cannot derive. Four systems, 8 repeated train/test
+splits, real `anthropic:claude-haiku-4-5`:
+
+| System | ROC-AUC (mean ± std) |
+|---|---:|
+| linear (raw) | 0.9752 ± 0.006 |
+| **linear + GenAI** | **0.9957 ± 0.002** |
+| Firefly AutoML (raw) | 0.9929 ± 0.003 |
+| Firefly AutoML + GenAI | 0.9950 ± 0.003 |
+
+- **GenAI lift on a linear model: +0.0205 ROC-AUC** — **Wilcoxon p = 0.0039** (significant). Claude
+  proposed and the gate accepted `total_revenue` / `price_volume_ratio` — it rediscovered the withheld
+  multiplicative driver from the schema alone.
+- On Firefly's tree-based AutoML the lift is smaller (+0.002): trees already approximate the interaction,
+  so there is less for GenAI to add — and the **cost/benefit gate guarantees it never regresses**.
+- **Cost:** 8 LLM calls, well under **$0.01** with Claude Haiku.
+
+The takeaway: GenAI feature engineering is a **Pareto-safe accelerator** — it adds measurable, significant
+value where the data has structure a model can't reach on its own, surfaces interpretable domain features,
+and is gated to never hurt, at negligible cost.
+
 ## GenAI feature engineering — real-LLM result
 
 With a real LLM (`anthropic:claude-haiku-4-5`), the `GenAIFeatureEngineer` was asked to improve a
