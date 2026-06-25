@@ -5,6 +5,24 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ## [Unreleased]
 
+### SP2 — GenAI feature engineering (flagship hybrid)
+
+Proves the core thesis in code: **the LLM proposes feature code; classical cross-validation measures
+the lift; a `CostBenefitGate` decides.** Built on `fireflyframework-agentic`.
+
+- **`FeatureCodeExecutor`** — vets LLM-generated pandas code with agentic's static safety analysis
+  (deny imports/dunder/dangerous builtins), then runs it in a restricted namespace (`df`/`pd`/`np`
+  only, minimal builtins allowlist). The CAAFE pattern, secure-by-default.
+- **`GenAIFeatureEngineer`** — the propose → execute → measure → gate loop with greedy forward
+  acceptance; injectable proposer (fully testable without an LLM) and injectable scorer.
+- **`AgentFeatureProposer`** — wraps a `FireflyAgent` (Pydantic AI) to propose features as structured
+  output; `StaticFeatureProposer` for deterministic / LLM-free pipelines.
+- **`CostBenefitGate`** — accepts a GenAI contribution only if it beats the current score by `min_gain`.
+- Opt-in via `genai.enabled` + `@enable_genai_ds_stack`-style auto-configuration.
+
+Gate: ruff clean, pyright 0 errors, 76 tests passing (useful interaction feature accepted with measured
+lift; useless/unsafe proposals rejected; agentic integration verified via pydantic-ai `TestModel`).
+
 ### SP1 — Hexagonal ports + classical tabular core
 
 The classical AutoML heart: real, benchmarkable tabular AutoML behind swappable ports.
