@@ -10,6 +10,14 @@ just generates candidates, and the data does the rest.
 
 <p align="center"><img src="img/genai-classical-fusion.svg" alt="GenAI proposes feature code; classical cross-validation measures the lift and the gate decides what survives" width="100%"></p>
 
+!!! firefly "Wired into AutoML"
+
+    When a `FeatureEngineerPort` is present in the container (i.e. GenAI is enabled),
+    [`AutoML.from_context(app)`](automl.md) runs this propose → execute → measure → gate loop
+    **before** model selection and trains on the engineered features — the gate's accepted/rejected
+    audit is threaded into `result.extras["feature_engineering"]`. Classical-first stays the default:
+    with GenAI off, `AutoML` is unchanged.
+
 ## The loop
 
 `GenAIFeatureEngineer` runs **propose → execute → measure → gate**:

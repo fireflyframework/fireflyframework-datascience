@@ -17,6 +17,7 @@ from fireflyframework_datascience.core.types import TaskType
 from fireflyframework_datascience.datasets import Dataset
 from fireflyframework_datascience.evaluation import MetricsEvaluatorPort
 from fireflyframework_datascience.explainability import ExplainerPort
+from fireflyframework_datascience.features import FeatureEngineerPort
 from fireflyframework_datascience.models import Model, TrainerPort
 from fireflyframework_datascience.search import SearchPolicyPort
 from fireflyframework_datascience.tracking import TrackerPort
@@ -37,6 +38,7 @@ class AutoML:
         validator: ValidatorPort | None = None,
         tracker: TrackerPort | None = None,
         explainer: ExplainerPort | None = None,
+        feature_engineer: FeatureEngineerPort | None = None,
         cv: int = 5,
         n_trials: int = 20,
         random_state: int = 42,
@@ -47,6 +49,7 @@ class AutoML:
         self._validator = validator
         self._tracker = tracker
         self._explainer = explainer
+        self._feature_engineer = feature_engineer
         self._cv = cv
         self._n_trials = n_trials
         self._random_state = random_state
@@ -63,6 +66,7 @@ class AutoML:
             validator=container.resolve_optional(ValidatorPort),
             tracker=container.resolve_optional(TrackerPort),
             explainer=container.resolve_optional(ExplainerPort),
+            feature_engineer=container.resolve_optional(FeatureEngineerPort),
             **overrides,
         )
 
@@ -73,6 +77,13 @@ class AutoML:
 
         if self._validator is not None:
             self._validator.validate(dataset.X, dataset.y).raise_if_failed()
+
+        # GenAI feature engineering (when wired): the LLM proposes, the gate keeps only measured wins,
+        # and the engineered dataset feeds model selection. Off unless a FeatureEngineerPort is present.
+        engineering = None
+        if self._feature_engineer is not None:
+            engineering = self._feature_engineer.engineer(dataset)
+            dataset = engineering.dataset
 
         candidates = [t for t in self._trainers if t.supports(task)]
         if not candidates:
@@ -118,6 +129,7 @@ class AutoML:
             evaluator=self._evaluator,
             cv_scoring=scoring,
             explainer=self._explainer,
+            extras={"feature_engineering": engineering} if engineering is not None else {},
         )
 
     # -- internals --------------------------------------------------------
