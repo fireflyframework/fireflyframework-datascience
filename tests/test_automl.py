@@ -17,7 +17,9 @@ def test_classification_end_to_end() -> None:
     result = AutoML().fit(train)
 
     assert result.task is TaskType.BINARY
-    assert len(result.leaderboard) == 3  # RF, Linear, HistGB
+    # core trainers are always present; installed boosting libraries are added by default
+    names = {entry.model_name for entry in result.leaderboard}
+    assert {"random_forest", "linear", "hist_gradient_boosting"} <= names
     assert result.leaderboard[0].cv_score >= result.leaderboard[-1].cv_score  # sorted desc
 
     evaluation = result.evaluate(test)

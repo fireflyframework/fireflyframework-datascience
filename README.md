@@ -44,9 +44,11 @@ swappability, and security by default.
 - **One reproducible pattern.** The LLM proposes code/features/pipelines/seeds; a deterministic
   classical engine trains, scores, and selects; every GenAI step is gated behind a measured
   improvement over a seeded classical baseline.
-- **Hexagonal & swappable.** Every ML/MLOps library (scikit-learn, XGBoost, LightGBM, CatBoost,
-  AutoGluon, TabPFN, PyTorch Lightning, HuggingFace, MLflow, Feast, BentoML, …) is a swappable adapter
-  behind a `Protocol` port. The core stays library-agnostic.
+- **Hexagonal & swappable.** Each ML/MLOps library sits behind a `Protocol` port, so the core stays
+  library-agnostic. Adapters that ship today: scikit-learn, XGBoost, LightGBM, CatBoost, TabPFN,
+  PyTorch Lightning, HuggingFace, and MLflow. Ports with reference or planned adapters (AutoGluon,
+  Feast, BentoML packaging, a model registry) are marked as such in the docs — the seams exist; the
+  adapters are landing.
 - **Firefly-native.** Auto-configuration, dependency injection, a startup banner + wiring summary,
   CalVer, and the same CI gates as the rest of the Firefly Framework.
 
@@ -121,8 +123,10 @@ Five acyclic layers, mirroring `fireflyframework-agentic` with a **DataScience**
 
 ### Hexagonal ports & adapters
 
-Every ML/MLOps library (scikit-learn, XGBoost, AutoGluon, TabPFN, PyTorch Lightning, HuggingFace,
-MLflow, BentoML, …) is a swappable adapter behind a `Protocol` port. The core stays library-agnostic.
+Each ML/MLOps library sits behind a `Protocol` port, so the core stays library-agnostic. Shipping
+adapters today: scikit-learn, XGBoost, LightGBM, CatBoost, TabPFN, PyTorch Lightning, HuggingFace,
+MLflow. AutoGluon, Feast, BentoML packaging and a model registry are ports with reference/planned
+adapters.
 
 <p align="center">
   <img src="docs/img/hexagonal.svg" alt="Hexagonal ports and adapters" width="78%">

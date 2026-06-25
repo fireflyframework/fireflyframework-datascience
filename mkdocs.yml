@@ -104,6 +104,7 @@ nav:
       - Architecture: architecture.md
       - Datasets: datasets.md
       - Classical AutoML: automl.md
+      - Explainability: explainability.md
       - GenAI Feature Engineering: genai-features.md
       - Agentic ML-Engineering Loop: agentic-loop.md
       - Deep Learning & TabFM: deep-learning.md
