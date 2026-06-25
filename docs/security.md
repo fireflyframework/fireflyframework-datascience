@@ -4,6 +4,10 @@
 
 The GenAI accelerators (CAAFE-style automated feature engineering, agentic analysis) ask a model to *write Python that runs against your data*. That is an attack surface. The framework's job is to make the default path safe even when the model is wrong, compromised, or steered by adversarial data. This page describes the trust model, the controls that enforce it, and — importantly — where those controls stop.
 
+<p align="center">
+  <img src="img/security.svg" alt="Secure-by-default execution tiers" width="85%">
+</p>
+
 ## Threat model
 
 The model is **not** trusted. We assume any of:

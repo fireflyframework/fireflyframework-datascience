@@ -75,5 +75,8 @@ nav:
       - Benchmarks: benchmarks.md
   - Use case — Lumen: use-case-lumen.md
 
-not_in_nav: |
-  /superpowers/
+# README.md is the GitHub folder index (table of contents); index.md is the site home. Keep the
+# former in the repo but exclude it (and the local-only specs) from the built site.
+exclude_docs: |
+  README.md
+  superpowers/

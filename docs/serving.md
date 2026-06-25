@@ -4,6 +4,10 @@
 
 Firefly DataScience keeps the core dependency-free. A fitted `Model` is served by a `ModelServerPort`; experiment runs go through a `TrackerPort`; data/model lineage flows through a `LineagePort`. Each port ships a zero-dependency default and an opt-in adapter behind an extra.
 
+<p align="center">
+  <img src="img/ecosystem.svg" alt="Firefly ecosystem" width="85%">
+</p>
+
 ## The model-server port
 
 ```python
