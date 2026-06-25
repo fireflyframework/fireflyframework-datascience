@@ -11,8 +11,11 @@ use_directory_urls: false
 
 theme:
   name: material
-  logo: img/banner.svg
-  favicon: img/banner.svg
+  logo: img/logo.svg
+  favicon: img/favicon.svg
+  font:
+    text: Inter
+    code: JetBrains Mono
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -29,14 +32,21 @@ theme:
         icon: material/weather-sunny
         name: Switch to light mode
   features:
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.indexes
     - navigation.top
+    - navigation.tracking
     - navigation.footer
     - navigation.instant
+    - navigation.instant.progress
     - content.code.copy
     - content.code.annotate
+    - content.tooltips
     - search.suggest
     - search.highlight
+    - search.share
     - toc.follow
   icon:
     repo: fontawesome/brands/github
@@ -55,9 +65,32 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.keys
+  - footnotes
 
 plugins:
   - search
+
+extra_css:
+  - stylesheets/firefly.css
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/fireflyframework/fireflyframework-datascience
+      name: Firefly DataScience on GitHub
+    - icon: material/rocket-launch-outline
+      link: https://github.com/fireflyframework/fireflyframework-agentic
+      name: Firefly Agentic — the GenAI substrate
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/fireflyframework-datascience/
+      name: fireflyframework-datascience on PyPI
 
 nav:
   - Home: index.md

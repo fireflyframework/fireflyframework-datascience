@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Firefly DataScience">
+  <rect width="64" height="64" rx="14" fill="#0a1b22"/>
+  <rect width="64" height="64" rx="14" fill="url(#tile)"/>
+  <defs><radialGradient id="tile" cx="40%" cy="34%" r="65%">
+    <stop offset="0" stop-color="#06b6d4" stop-opacity="0.22"/><stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
+  </radialGradient></defs>
+  <line x1="32.0" y1="32.0" x2="17.6" y2="21.2" stroke="#3fb6cf" stroke-width="1.26" opacity="0.55"/><line x1="32.0" y1="32.0" x2="48.6" y2="25.0" stroke="#3fb6cf" stroke-width="1.26" opacity="0.55"/><line x1="32.0" y1="32.0" x2="35.1" y2="49.7" stroke="#3fb6cf" stroke-width="1.26" opacity="0.55"/><circle cx="17.6" cy="21.2" r="2.88" fill="#67e8f9"/><circle cx="48.6" cy="25.0" r="2.88" fill="#67e8f9"/><circle cx="35.1" cy="49.7" r="2.88" fill="#67e8f9"/><circle cx="32" cy="32" r="12.85" fill="#f6a821" opacity="0.18"/><circle cx="32" cy="32" r="7.56" fill="#ffc24a"/><circle cx="32" cy="32" r="3.78" fill="#fff7e8"/>
+</svg>
