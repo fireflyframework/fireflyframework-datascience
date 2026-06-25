@@ -19,6 +19,11 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
   generated diagram set (8 diagrams: architecture, hexagonal, automl-loop, genai-fusion, agentic-loop,
   auto-configuration, security, ecosystem) under `docs/img/`.
 - **Polished README** (compelling 5-line quick start, docs-site link) and a new **`CONTRIBUTING.md`**.
+- **Fully diagrammed** — all 8 diagrams embedded across the README ("how it works" visual tour) and the
+  docs pages; a `docs/README.md` table-of-contents for GitHub folder browsing.
+- **Repository metadata** — description, homepage (docs site), and 20 topics set via `gh`.
+- **Fix:** the `.gitignore` rule `datasets/` was excluding the `datasets` source module from git (it had
+  never been committed); anchored the data-artifact ignores to the repo root and formatted the module.
 
 ### AMLB benchmark (Tier-1)
 

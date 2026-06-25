@@ -10,6 +10,10 @@ an iteration and patience budget.
 
 The whole cycle is: **propose → train/CV → verify → reflect → select**.
 
+<p align="center">
+  <img src="img/agentic-loop.svg" alt="The agentic ML-engineering loop" width="85%">
+</p>
+
 ## The pieces
 
 | Type | Role |

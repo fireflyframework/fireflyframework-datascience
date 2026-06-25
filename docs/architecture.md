@@ -168,3 +168,11 @@ Passing `auto_configurations=[...]` **replaces** discovery entirely (handy for h
 - [Configuration](./configuration.md)
 - [Ports and adapters reference](index.md)
 - [Writing an auto-configuration](index.md)
+
+## Auto-configuration flow
+
+Adapters self-register via the `firefly_datascience.auto_configuration` entry-point group; the application context discovers them, evaluates their conditions, and registers the surviving beans.
+
+<p align="center">
+  <img src="img/auto-configuration.svg" alt="Entry-point auto-configuration" width="62%">
+</p>

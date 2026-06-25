@@ -80,25 +80,68 @@ Add a real LLM for GenAI feature engineering and the agentic loop — see
 [Configuring the LLM](docs/llm-configuration.md). The full guided walkthrough is the
 [Tutorial](docs/tutorial.md).
 
-## Architecture
+## How it works
 
-Five acyclic layers, mirroring `fireflyframework-agentic` with a **DataScience** layer inserted. Every
-ML/MLOps library is a swappable adapter behind a `Protocol` port, registered by **entry-point
-auto-configuration** and resolved through a type-hint **dependency-injection container**.
+### Layered architecture
+
+Five acyclic layers, mirroring `fireflyframework-agentic` with a **DataScience** layer inserted:
+`Core → Agent (reused) → DataScience → Intelligence → Orchestration`.
 
 <p align="center">
-  <img src="docs/img/architecture.svg" alt="Firefly DataScience layered architecture" width="70%">
+  <img src="docs/img/architecture.svg" alt="Firefly DataScience layered architecture" width="78%">
 </p>
 
-```
-Core → Agent (reused: agentic) → DataScience → Intelligence → Orchestration
-```
+### Hexagonal ports & adapters
 
-The GenAI ↔ classical fusion is governed: the LLM proposes code; the classical engine measures; a
-cost/benefit gate keeps only what beats the baseline.
+Every ML/MLOps library (scikit-learn, XGBoost, AutoGluon, TabPFN, PyTorch Lightning, HuggingFace,
+MLflow, BentoML, …) is a swappable adapter behind a `Protocol` port. The core stays library-agnostic.
 
 <p align="center">
-  <img src="docs/img/genai-classical-fusion.svg" alt="Governed GenAI and classical fusion" width="70%">
+  <img src="docs/img/hexagonal.svg" alt="Hexagonal ports and adapters" width="78%">
+</p>
+
+### Auto-configuration
+
+Adapters self-register via entry points and are wired by a type-hint dependency-injection container,
+gated by `@conditional_on_*` — exactly like Spring Boot / pyfly.
+
+<p align="center">
+  <img src="docs/img/auto-configuration.svg" alt="Entry-point auto-configuration" width="62%">
+</p>
+
+### Classical AutoML
+
+<p align="center">
+  <img src="docs/img/automl-loop.svg" alt="Classical AutoML pipeline" width="88%">
+</p>
+
+### Governed GenAI × classical fusion
+
+The LLM proposes code/features; a deterministic engine measures; a **cost/benefit gate** keeps only
+what beats the seeded baseline. The LLM never decides — the measured score does.
+
+<p align="center">
+  <img src="docs/img/genai-classical-fusion.svg" alt="Governed GenAI and classical fusion" width="78%">
+</p>
+
+### The agentic ML-engineering loop
+
+Propose → execute (sandboxed) → observe → **verify** (correctness ≠ ran) → reflect → select.
+
+<p align="center">
+  <img src="docs/img/agentic-loop.svg" alt="Agentic ML-engineering loop" width="92%">
+</p>
+
+### Secure by default
+
+<p align="center">
+  <img src="docs/img/security.svg" alt="Secure-by-default execution tiers" width="88%">
+</p>
+
+### Where it fits
+
+<p align="center">
+  <img src="docs/img/ecosystem.svg" alt="Firefly ecosystem" width="70%">
 </p>
 
 ## Documentation

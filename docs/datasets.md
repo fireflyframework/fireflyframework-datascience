@@ -8,6 +8,10 @@ scikit-learn are imported lazily), so the `Dataset` type and the `DatasetLoaderP
 usable without the `tabular` extra installed. Concrete loaders live in
 `fireflyframework_datascience.datasets.adapters`.
 
+<p align="center">
+  <img src="img/hexagonal.svg" alt="Hexagonal ports and adapters" width="85%">
+</p>
+
 ## The `Dataset` container
 
 `Dataset` is a dataclass. The only required fields are `name` and `X`.
