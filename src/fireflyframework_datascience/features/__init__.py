@@ -81,7 +81,7 @@ class CostBenefitGate:
 
 @runtime_checkable
 class FeatureProposer(Protocol):
-    """Proposes feature-engineering code for a dataset (the LLM-backed or stub component)."""
+    """Proposes feature-engineering code for a dataset (LLM-backed or deterministic)."""
 
     def propose(self, dataset: Dataset, *, max_features: int = 5) -> list[FeatureProposal]: ...
 
