@@ -8,6 +8,10 @@
 
 > New here? Jump to the **[Tutorial](tutorial.md)** for a guided, runnable walkthrough, or
 > **[Configuring the LLM](llm-configuration.md)** to wire up GenAI.
+>
+> 📄 **Business or transformation leader?** A polished
+> [Strategic Introduction (PDF)](brief/firefly-datascience-strategic-introduction.pdf) frames the value
+> — faster time-to-value, governed GenAI, no lock-in — without the engineering detail.
 
 `fireflyframework-datascience` is a state-of-the-art Python metaframework for AutoML. It pairs **GenAI**
 — built on [`fireflyframework-agentic`](https://github.com/fireflyframework/fireflyframework-agentic),
