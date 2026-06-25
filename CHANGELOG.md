@@ -5,6 +5,24 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ## [Unreleased]
 
+### SP3 — Agentic ML-engineering loop
+
+The headline agentic capability, grounded on the classical executor: **propose → train/CV → verify →
+reflect → select**, with verification as a stage distinct from execution-success.
+
+- **`AgenticAutoML`** — seeds a population (each trainer at defaults), then greedily reflects on the
+  attempt history to propose better candidates, bounded by an iteration + patience budget. Every
+  candidate is cross-validated by the classical engine; the best *verified* one is refit.
+- **`DeterministicVerifier`** — requires a finite score that beats a trivial (Dummy) baseline; a model
+  that "ran" but doesn't beat the baseline is rejected (the DS-STAR correctness-≠-ran principle).
+- **`AgentSolutionProposer`** — a `FireflyAgent` that reflects on history to propose the next
+  (trainer, params); the LLM client is built lazily (the app boots GenAI-on without an API key).
+  `SequenceProposer` gives deterministic, LLM-free runs.
+- Opt-in via `genai.enabled`; `EngineeringRun` carries the full audited attempt trace.
+
+Gate: ruff clean, pyright 0 errors, 81 tests passing; the loop selects the best verified candidate,
+records invalid attempts, and fits a usable model. Also fixed eager LLM-client construction at startup.
+
 ### SP2 — GenAI feature engineering (flagship hybrid)
 
 Proves the core thesis in code: **the LLM proposes feature code; classical cross-validation measures

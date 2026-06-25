@@ -139,7 +139,14 @@ class AgentFeatureProposer:
 
     def __init__(self, *, model: Any = None, agent: Any = None, sample_rows: int = 5) -> None:
         self._sample_rows = sample_rows
-        self._agent = agent if agent is not None else self._build_agent(model)
+        self._model = model
+        self._explicit_agent = agent
+        self._agent: Any = None  # built lazily on first use (so no LLM client is created at startup)
+
+    def _get_agent(self) -> Any:
+        if self._agent is None:
+            self._agent = self._explicit_agent if self._explicit_agent is not None else self._build_agent(self._model)
+        return self._agent
 
     def _build_agent(self, model: Any) -> Any:
         from fireflyframework_agentic.agents import FireflyAgent
@@ -157,7 +164,7 @@ class AgentFeatureProposer:
 
     def propose(self, dataset: Dataset, *, max_features: int = 5) -> list[FeatureProposal]:
         prompt = self._describe(dataset, max_features)
-        result = self._agent.run_sync(prompt)
+        result = self._get_agent().run_sync(prompt)
         features = getattr(result.output, "features", [])
         return [FeatureProposal(name=f.name, code=f.code, rationale=f.rationale) for f in features[:max_features]]
 
