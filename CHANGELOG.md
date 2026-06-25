@@ -5,6 +5,24 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ## [Unreleased]
 
+### SP4 — Deep learning & tabular foundation models
+
+- **`DLTrainerPort` / `TabFMPort`** ports; **`MLPTrainer`** (scikit-learn MLP) is a *verified* neural
+  reference. **`TabPFNPredictor`** (`tabfm` extra) and **`TorchTabularTrainer`** (`dl` extra) are gated
+  adapters on the same contract — the integration point for PyTorch Lightning + HuggingFace +
+  distributed (Accelerate/FSDP/DDP) + PEFT/TRL, verified under the nightly suite, not the PR gate.
+
+### SP5 — Serving, MLOps breadth & the Lumen sample
+
+- **`ModelServerPort`** with a verified in-process **`LocalModelServer`** (default) and a gated
+  **`BentoMLModelServer`** (`serving` extra).
+- **`LineagePort`** with a `NoOpLineage` default and a gated **`OpenLineageEmitter`** (`lineage` extra).
+- **Lumen Lending credit-risk sample** (`samples/lumen_credit_risk.py`) — the end-to-end showcase:
+  GenAI feature engineering discovers `debt_to_income` (and the gate rejects a noise feature), classical
+  AutoML selects the winner, and the model is served. Runs offline; covered by tests (holdout
+  accuracy ≈ 0.85). Demonstrates both the imperative and DI-wired (`AutoML.from_context`) entry points
+  for the framework's two audiences.
+
 ### SP3 — Agentic ML-engineering loop
 
 The headline agentic capability, grounded on the classical executor: **propose → train/CV → verify →

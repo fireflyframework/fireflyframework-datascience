@@ -78,6 +78,9 @@ features = "fireflyframework_datascience.features.auto_configuration:FeaturesAut
 search = "fireflyframework_datascience.search.auto_configuration:SearchAutoConfiguration"
 validation = "fireflyframework_datascience.validation.auto_configuration:ValidationAutoConfiguration"
 tracking = "fireflyframework_datascience.tracking.auto_configuration:TrackingAutoConfiguration"
+dl = "fireflyframework_datascience.dl.auto_configuration:DLAutoConfiguration"
+serving = "fireflyframework_datascience.serving.auto_configuration:ServingAutoConfiguration"
+lineage = "fireflyframework_datascience.lineage.auto_configuration:LineageAutoConfiguration"
 automl = "fireflyframework_datascience.automl.auto_configuration:AutoMLAutoConfiguration"
 
 [dependency-groups]
@@ -122,6 +125,9 @@ ignore = ["E501", "TC001", "TC002", "TC003", "UP040", "UP046", "UP047", "B008", 
 "src/fireflyframework_datascience/validation/**" = ["PLC0415"]
 "src/fireflyframework_datascience/tracking/**" = ["PLC0415"]
 "src/fireflyframework_datascience/automl/**" = ["PLC0415"]
+"src/fireflyframework_datascience/dl/**" = ["PLC0415"]
+"src/fireflyframework_datascience/serving/**" = ["PLC0415"]
+"src/fireflyframework_datascience/lineage/**" = ["PLC0415"]
 "src/fireflyframework_datascience/preprocessing.py" = ["PLC0415"]
 "tests/**" = ["PLC0415"]
 "samples/**" = ["PLC0415"]
