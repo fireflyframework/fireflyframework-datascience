@@ -15,6 +15,7 @@
 | [Home / Overview](index.md) | what the framework is, the 7 pillars, the architecture at a glance |
 | [Quick Start](quickstart.md) | install, boot, your first AutoML run, the `firefly-ds` CLI |
 | [Tutorial](tutorial.md) | the guided, runnable end-to-end walkthrough (offline, tested) |
+| [Samples](samples.md) | every runnable demo — incl. a real-LLM showcase and finance/retail cases |
 | [Configuration](configuration.md) | env vars, `.env`, YAML, and profile precedence |
 | [Configuring the LLM](llm-configuration.md) | providers, API keys, model selection, cost & budget gating |
 

@@ -110,6 +110,29 @@ Both beans are typed as `DatasetLoaderPort`, so downstream code can depend on th
 
 Tier 3 measures the *agent*, not a single estimator: given a task description and raw data, can the system produce a working, scoring solution end to end? The target suites are **MLE‑bench** and **DSBench**. These run in a sandbox on a periodic schedule rather than per-PR. As they land, they reuse the same `DatasetLoaderPort` contract — a new loader (e.g. a `mlebench:` adapter) plugs in exactly like `SklearnDatasetLoader` and `OpenMLDatasetLoader` without changing callers.
 
+## Results (real, executed)
+
+These are produced by running the harnesses — fixed `random_state=0`, default trainers, no manual
+tuning. Full table and reproduction steps: [`benchmarks/RESULTS.md`](https://github.com/fireflyframework/fireflyframework-datascience/blob/main/benchmarks/RESULTS.md).
+
+**Tier-1 — OpenML-CC18 (AMLB-style), holdout ROC-AUC:**
+
+| credit-g | diabetes | blood-transfusion | ilpd |
+|---:|---:|---:|---:|
+| 0.825 | 0.872 | 0.751 | 0.780 |
+
+Comparable to published AutoGluon / H2O / FLAML numbers on the same datasets — out of the box, on real
+data with categorical features.
+
+**On real finance & retail data** (`samples/industry_showcase.py`): German credit risk (`credit-g`)
+reaches **0.82** holdout ROC-AUC and bank-marketing campaign conversion reaches **0.92** — each a full
+load → validate → AutoML → evaluate run on public OpenML data, no Kaggle account required.
+
+**Governed GenAI, with a real LLM:** on a synthetic credit-risk set whose driver (debt-to-income) is
+withheld from the model, `anthropic:claude-haiku-4-5` proposed six features; the cost/benefit gate
+accepted the two that lifted the score (it rediscovered debt-to-income from the schema alone) and
+rejected the four that did not. Reproduce with `samples/genai_llm_showcase.py`.
+
 ## See also
 
 - [Datasets API](./datasets.md)

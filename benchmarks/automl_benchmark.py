@@ -65,11 +65,11 @@ def run_suite(datasets: list[str] | None = None, *, cv: int = 3, test_size: floa
 
 def format_table(results: list[BenchmarkResult]) -> str:
     """Render results as a fixed-width table."""
-    header = f"{'dataset':<20}{'task':<14}{'metric':<10}{'cv':>8}{'holdout':>9}{'winner':>22}{'secs':>7}"
+    header = f"{'dataset':<20}{'task':<14}{'metric':<10}{'cv':>9}{'holdout':>10}{'winner':>26}{'secs':>8}"
     lines = [header, "-" * len(header)]
     for r in results:
         lines.append(
-            f"{r.dataset:<20}{r.task:<14}{r.metric:<10}{r.cv_score:>8.4f}{r.holdout_score:>9.4f}{r.winner:>22}{r.fit_seconds:>7.2f}"
+            f"{r.dataset:<20}{r.task:<14}{r.metric:<10}{r.cv_score:>9.4f}{r.holdout_score:>10.4f}{r.winner:>26}{r.fit_seconds:>8.2f}"
         )
     return "\n".join(lines)
 

@@ -65,6 +65,13 @@ science actually delivers business value:
   generated code; generative AI is used only where it measurably pays.
 - **Production-ready** — serving, data validation, lineage and real benchmarks are built in, not bolted on.
 
+**Proven, not promised.** In a head-to-head over public OpenML datasets (5-fold CV ROC-AUC), Firefly's
+AutoML **matches or beats** a standard baseline on **6/6** — up to **+0.15** where the data is non-linear
+(phoneme: **0.96 vs 0.81**) — and reaches **0.82–0.92** on real credit-risk and marketing data out of the
+box. With a real LLM (`claude-haiku-4-5`), governed GenAI feature engineering **rediscovered a withheld
+risk driver** (debt-to-income) from the schema alone, keeping only what measurably helped. See the
+[benchmark results](benchmarks/RESULTS.md) — every number is reproducible.
+
 > 📄 **For business & transformation leaders:** a polished
 > [Strategic Introduction (PDF)](docs/brief/firefly-datascience-strategic-introduction.pdf) frames the
 > value without the engineering detail.
@@ -170,6 +177,7 @@ Propose → execute (sandboxed) → observe → **verify** (correctness ≠ ran)
 | Guide | |
 |---|---|
 | [Tutorial](docs/tutorial.md) | the guided end-to-end walkthrough (runs offline; tested) |
+| [Samples](docs/samples.md) | runnable demos — tutorial, **real-LLM showcase**, finance/retail |
 | [Quick Start](docs/quickstart.md) | install, boot, first AutoML run, the `firefly-ds` CLI |
 | [Configuring the LLM](docs/llm-configuration.md) | providers, API keys, model selection, cost gating |
 | [Architecture](docs/architecture.md) | layers, hexagonal ports, auto-configuration, the DI container |

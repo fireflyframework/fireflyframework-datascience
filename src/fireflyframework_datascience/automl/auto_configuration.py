@@ -16,8 +16,8 @@ class AutoMLAutoConfiguration:
 
     @bean(name="automl_backend", primary=True)
     def automl_backend(self) -> AutoMLBackendPort:
-        # A factory-style placeholder bean: the real, DI-wired engine is built via
-        # AutoML.from_context(app). This bean provides a sensible default instance.
+        # A ready-to-use AutoML backend with the default trainers, search and evaluator. For a backend
+        # wired from the container's registered adapters instead, build it with AutoML.from_context(app).
         from fireflyframework_datascience.automl.facade import AutoML
 
         return AutoML()

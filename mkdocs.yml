@@ -61,6 +61,7 @@ nav:
   - Getting started:
       - Quick Start: quickstart.md
       - Tutorial: tutorial.md
+      - Samples: samples.md
       - Configuration: configuration.md
       - Configuring the LLM: llm-configuration.md
   - Concepts:
