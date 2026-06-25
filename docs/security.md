@@ -99,7 +99,16 @@ The post-conditions are enforced in order: a non-`DataFrame` result raises `Feat
 
 ## Layer 3 — the tiered sandbox
 
-Layers 1 and 2 run **in-process**. They block the obvious capabilities, but a determined escape against a CPython process is never something to bet sensitive data on. For untrusted data, escalate isolation with `execution.sandbox` in `ExecutionConfig`:
+!!! warning "Implementation status — what is enforced today"
+
+    Layers 1–2 (static analysis + the restricted in-process namespace) are **enforced now** and are
+    what protects you today. The sandbox *tiers* below (`docker`, `e2b`), `execution.timeout_seconds`,
+    and the `require_approval` HITL gate are currently **declared, validated configuration** — their
+    routing and enforcement are on the roadmap (a `CodeExecutorPort` with per-tier adapters and an
+    approval gate). Until that ships, the real isolation is the in-process `monty` / `local` path:
+    **do not run genuinely untrusted data through GenAI expecting container/microVM isolation yet.**
+
+Layers 1 and 2 run **in-process**. They block the obvious capabilities, but a determined escape against a CPython process is never something to bet sensitive data on. The configuration surface below lets you *declare* stronger isolation for untrusted data via `execution.sandbox` in `ExecutionConfig` (enforcement is roadmap, per the note above):
 
 ```python
 from fireflyframework_datascience.core.config import FireflyDataScienceConfig
@@ -142,7 +151,7 @@ The literal type for `sandbox` is exactly `Literal["monty", "docker", "e2b", "lo
 
     Profile overlays outrank the base `firefly-datascience.yaml`, so a `prod` profile can tighten isolation without touching the base file. See [Configuration](configuration.md) for the full precedence order.
 
-Beyond the strongest sandbox sits **HITL** (human-in-the-loop): when `execution.require_approval` is `True` (the default), generated code is surfaced for human approval before it runs. This is the final tier — a person, not a policy, signs off.
+Beyond the strongest sandbox sits **HITL** (human-in-the-loop): `execution.require_approval` defaults to `True`, and the design's final tier is a person — not a policy — signing off on generated code before it runs. (Per the status note above, the approval-gate wiring is on the roadmap; today the field is declared and validated.)
 
 !!! note "Defaults are the safe end of every axis"
     Out of the box, `sandbox = "monty"` (in-process restricted interpreter), `timeout_seconds = 60`, and `require_approval = True`. You loosen these deliberately — and only `local` removes isolation entirely.
@@ -154,19 +163,19 @@ The subtle attack is not the model going rogue on its own; it is a **column valu
 1. **Static analysis is content-blind.** It rejects `os`, `subprocess`, `socket`, dunder access, and `eval`/`exec`/`open` regardless of *why* the model wrote them — so a successful injection still produces code that gets rejected.
 2. **The restricted namespace** means even "clever" injected code has no I/O, no imports, no host reach.
 3. **The numeric-new-column contract** means injected code that tries to do anything other than add a numeric feature fails the post-conditions.
-4. **Sandboxing + HITL** mean that for genuinely untrusted data you route to `docker`/`e2b` and require approval — so injection cannot silently reach a capability.
+4. **Sandboxing + HITL** are the *intended* outer tiers for genuinely untrusted data (route to `docker`/`e2b`, require approval). Their enforcement is on the roadmap (see the Layer 3 status note) — today, rely on points 1–3, which are enforced in-process.
 
 !!! warning "The framework does not read your data's meaning"
     Firefly cannot inspect or sanitize the *semantics* of your data. Prompt-injection defense rests on capability restriction and sandboxing, not on detecting malicious text. Treat data of unknown provenance as untrusted input: raise `execution.sandbox` and keep `require_approval` on.
 
 ## Governance — the CostBenefitGate
 
-GenAI is **off by default** (`genai.enabled = False`) — Firefly is classical-first. When you do enable it, the `CostBenefitGate` is the governance control: it decides whether an LLM call is *worth it* before spending tokens, bounded by a budget.
+GenAI is **off by default** (`genai.enabled = False`) — Firefly is classical-first. When you do enable it, the `CostBenefitGate` is the governance control: it is a **post-hoc, measured-lift filter** — a proposal (feature or pipeline) is adopted only if it *measurably beats the seeded baseline* on cross-validation; anything that doesn't is discarded. (It governs *what is kept*, not token spend: `genai.budget_usd` is a declared ceiling whose pre-call enforcement is on the roadmap.)
 
 ```python
 config.genai.enabled            # False by default
 config.genai.cost_benefit_gate  # True — gate LLM spend on expected benefit
-config.genai.budget_usd         # optional hard ceiling (float | None), e.g. 5.00
+config.genai.budget_usd         # declared ceiling (float | None); pre-call enforcement is roadmap
 ```
 
 ```yaml
@@ -179,7 +188,7 @@ genai:
 ```
 
 !!! firefly "Two orthogonal gates: how much, and what"
-    The `CostBenefitGate` is a *governance* control, not a security control: it limits spend and runaway agentic loops, not capability. Keep both axes in mind — `cost_benefit_gate` governs **how much** the model runs; the executor and sandbox govern **what its output may do**. Neither substitutes for the other.
+    The `CostBenefitGate` is a *governance* control, not a security control: it governs **what GenAI output is kept** (only proposals that measurably beat the baseline), not capability. Keep both axes in mind — the gate governs **whether a proposal earns its place**; the executor and sandbox govern **what its output may do**. Neither substitutes for the other.
 
 ## Limits of the trust model
 

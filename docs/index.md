@@ -177,6 +177,11 @@ app = FireflyDataScienceApplication.run(config=config)
     ---
     The classical-first engine: train, score, select.
 
+-   :material-lightbulb-on-outline:{ .middle } __[Explainability](explainability.md)__
+
+    ---
+    Deterministic global + local feature importances (permutation, SHAP).
+
 -   :material-creation-outline:{ .middle } __[GenAI features](genai-features.md)__
 
     ---

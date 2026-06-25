@@ -16,6 +16,7 @@ from fireflyframework_datascience.automl import AutoMLResult, LeaderboardEntry
 from fireflyframework_datascience.core.types import TaskType
 from fireflyframework_datascience.datasets import Dataset
 from fireflyframework_datascience.evaluation import MetricsEvaluatorPort
+from fireflyframework_datascience.explainability import ExplainerPort
 from fireflyframework_datascience.models import Model, TrainerPort
 from fireflyframework_datascience.search import SearchPolicyPort
 from fireflyframework_datascience.tracking import TrackerPort
@@ -35,6 +36,7 @@ class AutoML:
         search_policy: SearchPolicyPort | None = None,
         validator: ValidatorPort | None = None,
         tracker: TrackerPort | None = None,
+        explainer: ExplainerPort | None = None,
         cv: int = 5,
         n_trials: int = 20,
         random_state: int = 42,
@@ -44,6 +46,7 @@ class AutoML:
         self._search = search_policy or _default_search()
         self._validator = validator
         self._tracker = tracker
+        self._explainer = explainer
         self._cv = cv
         self._n_trials = n_trials
         self._random_state = random_state
@@ -59,6 +62,7 @@ class AutoML:
             search_policy=container.resolve_optional(SearchPolicyPort) or _default_search(),
             validator=container.resolve_optional(ValidatorPort),
             tracker=container.resolve_optional(TrackerPort),
+            explainer=container.resolve_optional(ExplainerPort),
             **overrides,
         )
 
@@ -113,6 +117,7 @@ class AutoML:
             task=task,
             evaluator=self._evaluator,
             cv_scoring=scoring,
+            explainer=self._explainer,
         )
 
     # -- internals --------------------------------------------------------
@@ -164,13 +169,25 @@ class AutoML:
 
 
 def _default_trainers() -> list[TrainerPort]:
-    from fireflyframework_datascience.models.adapters import (
-        HistGradientBoostingTrainer,
-        LinearTrainer,
-        RandomForestTrainer,
-    )
+    import importlib
+    import importlib.util
 
-    return [RandomForestTrainer(), LinearTrainer(), HistGradientBoostingTrainer()]
+    adapters = importlib.import_module("fireflyframework_datascience.models.adapters")
+    trainers: list[TrainerPort] = [
+        adapters.RandomForestTrainer(),
+        adapters.LinearTrainer(),
+        adapters.HistGradientBoostingTrainer(),
+    ]
+    # Match the documented "+ XGBoost / LightGBM / CatBoost when installed" behaviour (the DI and
+    # agentic paths already do this) by including each boosting trainer whose library is importable.
+    for lib, cls_name in (
+        ("xgboost", "XGBoostTrainer"),
+        ("lightgbm", "LightGBMTrainer"),
+        ("catboost", "CatBoostTrainer"),
+    ):
+        if importlib.util.find_spec(lib) is not None:
+            trainers.append(getattr(adapters, cls_name)())
+    return trainers
 
 
 def _default_evaluator() -> MetricsEvaluatorPort:

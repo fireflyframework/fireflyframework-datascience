@@ -18,6 +18,7 @@ from fireflyframework_datascience.models import Model
 
 if TYPE_CHECKING:
     from fireflyframework_datascience.automl.facade import AutoML
+    from fireflyframework_datascience.explainability import ExplainerPort, GlobalExplanation
 
 
 @dataclass
@@ -44,6 +45,7 @@ class AutoMLResult:
     evaluator: MetricsEvaluatorPort
     cv_scoring: str = ""
     extras: dict[str, Any] = field(default_factory=dict)
+    explainer: ExplainerPort | None = None
 
     @property
     def best_score(self) -> float:
@@ -68,6 +70,19 @@ class AutoMLResult:
 
     def leaderboard_table(self) -> str:
         return "\n".join(str(entry) for entry in self.leaderboard)
+
+    def explain(self, dataset: Dataset) -> GlobalExplanation:
+        """Global feature importances for the winning model.
+
+        Uses the injected :class:`ExplainerPort` (the DI-wired explainer when built via
+        ``AutoML.from_context``), falling back to the dependency-free permutation-importance explainer.
+        """
+        explainer = self.explainer
+        if explainer is None:
+            from fireflyframework_datascience.explainability.adapters import PermutationImportanceExplainer
+
+            explainer = PermutationImportanceExplainer()
+        return explainer.explain_global(self.best_model, dataset)
 
 
 @runtime_checkable
