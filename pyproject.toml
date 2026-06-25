@@ -26,8 +26,11 @@ classifiers = [
 ]
 keywords = ["automl", "machine-learning", "deep-learning", "genai", "agents", "data-science", "framework"]
 dependencies = [
-    # The single framework hard-dependency: the Firefly GenAI substrate.
-    "fireflyframework-agentic>=26.6.0",
+    # The single framework hard-dependency: the Firefly GenAI substrate. It is not on PyPI, so we pin a
+    # direct git URL (PEP 508). This is tool-agnostic (pip and uv both honour it) and — crucially —
+    # avoids a dependency-confusion vector: a bare name would let pip fall back to PyPI for an unowned
+    # name. Pin @<rev> for a fully reproducible release.
+    "fireflyframework-agentic @ git+https://github.com/fireflyframework/fireflyframework-agentic@main",
     "pydantic>=2.13,<3",
     "pydantic-settings>=2.14.2,<3",
     "pyyaml>=6.0.1",
@@ -43,7 +46,7 @@ tabfm = ["tabpfn>=2.0.0"]
 automl = ["autogluon.tabular>=1.2.0"]
 # --- deep learning ---
 dl = ["torch>=2.4.0", "lightning>=2.4.0", "torchvision>=0.19.0", "accelerate>=1.0.0"]
-nlp = ["transformers>=4.45.0", "datasets>=3.0.0", "peft>=0.13.0", "trl>=0.11.0"]
+nlp = ["transformers>=4.45.0", "datasets>=3.0.0", "peft>=0.13.0", "trl>=0.11.0", "sentencepiece>=0.2.0"]
 # --- mlops ---
 tracking = ["mlflow>=2.17.0"]
 tracking-wandb = ["wandb>=0.18.0"]
@@ -55,9 +58,9 @@ lineage = ["openlineage-python>=1.23.0"]
 orchestration = ["apache-airflow>=2.10.0"]
 # --- data / benchmarks ---
 data = ["openml>=0.15.0", "polars>=1.9.0"]
-# --- genai accelerators (agentic extras) ---
+# --- genai accelerators (agentic extras; the base dep is pinned via the direct git URL above) ---
 genai = [
-    "fireflyframework-agentic[script-execution,embeddings,openai-embeddings,vectorstores-chroma]>=26.6.0",
+    "fireflyframework-agentic[script-execution,embeddings,openai-embeddings,vectorstores-chroma]",
 ]
 # convenience bundles
 automl-stack = ["fireflyframework-datascience[tabular,tabfm,automl,tracking,validation,data]"]
@@ -79,6 +82,8 @@ search = "fireflyframework_datascience.search.auto_configuration:SearchAutoConfi
 validation = "fireflyframework_datascience.validation.auto_configuration:ValidationAutoConfiguration"
 tracking = "fireflyframework_datascience.tracking.auto_configuration:TrackingAutoConfiguration"
 dl = "fireflyframework_datascience.dl.auto_configuration:DLAutoConfiguration"
+nlp = "fireflyframework_datascience.nlp.auto_configuration:NLPAutoConfiguration"
+vision = "fireflyframework_datascience.vision.auto_configuration:VisionAutoConfiguration"
 serving = "fireflyframework_datascience.serving.auto_configuration:ServingAutoConfiguration"
 lineage = "fireflyframework_datascience.lineage.auto_configuration:LineageAutoConfiguration"
 automl = "fireflyframework_datascience.automl.auto_configuration:AutoMLAutoConfiguration"
@@ -93,10 +98,9 @@ dev = [
     "pyright>=1.1.380",
 ]
 
-# The Firefly GenAI substrate is co-developed in its own public repo (not yet on PyPI), so we resolve
-# it from git — this works both locally and in CI. Pin to a tag/rev for a reproducible release.
-[tool.uv.sources]
-fireflyframework-agentic = { git = "https://github.com/fireflyframework/fireflyframework-agentic", branch = "main" }
+[tool.hatch.metadata]
+# Allow the PEP 508 direct git URL for fireflyframework-agentic (it is not on PyPI).
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fireflyframework_datascience"]
@@ -126,6 +130,8 @@ ignore = ["E501", "TC001", "TC002", "TC003", "UP040", "UP046", "UP047", "B008", 
 "src/fireflyframework_datascience/tracking/**" = ["PLC0415"]
 "src/fireflyframework_datascience/automl/**" = ["PLC0415"]
 "src/fireflyframework_datascience/dl/**" = ["PLC0415"]
+"src/fireflyframework_datascience/nlp/**" = ["PLC0415"]
+"src/fireflyframework_datascience/vision/**" = ["PLC0415"]
 "src/fireflyframework_datascience/serving/**" = ["PLC0415"]
 "src/fireflyframework_datascience/lineage/**" = ["PLC0415"]
 "src/fireflyframework_datascience/preprocessing.py" = ["PLC0415"]

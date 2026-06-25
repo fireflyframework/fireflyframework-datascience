@@ -5,6 +5,21 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ## [Unreleased]
 
+### NLP & vision modalities (DL parity beyond tabular)
+
+- **NLP** — `TextClassifierPort` + **`HFTextClassifier`** (HuggingFace, `nlp` extra): fine-tunes a
+  sequence-classification model (default DistilBERT) on `(texts, labels)`. Verified end-to-end on CPU
+  (integration-gated: downloads the model).
+- **Vision** — `ImageClassifierPort` + **`TorchCNNClassifier`** (`dl` extra): a small PyTorch CNN on
+  `(N,C,H,W)` arrays. **Verified** on synthetic images (no download) in the default gate.
+- Both auto-wire via the entry-point group when their library is present.
+
+### Supply-chain hardening
+
+- The `fireflyframework-agentic` dependency is now a **tool-agnostic PEP 508 direct git URL** (with
+  `tool.hatch.metadata.allow-direct-references`), closing a dependency-confusion vector where `pip`
+  would otherwise fall back to PyPI for the (unregistered) name. CI resolves it from the public repo.
+
 ### SP6 — Documentation, diagrams & brand
 
 - **`docs/`** — a 13-page guide (index, architecture, quickstart, configuration, datasets, automl,
