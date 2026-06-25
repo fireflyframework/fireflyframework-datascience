@@ -42,9 +42,7 @@ class Dataset:
     def has_target(self) -> bool:
         return self.y is not None
 
-    def train_test_split(
-        self, *, test_size: float = 0.25, random_state: int = 42
-    ) -> tuple[Dataset, Dataset]:
+    def train_test_split(self, *, test_size: float = 0.25, random_state: int = 42) -> tuple[Dataset, Dataset]:
         """Split into (train, test) datasets, stratifying on the target for classification."""
         from sklearn.model_selection import train_test_split as _split
 
