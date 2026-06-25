@@ -70,12 +70,15 @@ class SklearnMetricsEvaluator:
         return metrics
 
     def _add_proba_metrics(self, metrics: dict[str, float], y_true: Any, y_proba: Any, task: TaskType) -> None:
-        from sklearn.metrics import log_loss, roc_auc_score
+        from sklearn.metrics import average_precision_score, brier_score_loss, log_loss, roc_auc_score
 
         try:
             if task is TaskType.BINARY:
                 positive = y_proba[:, 1] if getattr(y_proba, "ndim", 1) == 2 else y_proba
                 metrics["roc_auc"] = float(roc_auc_score(y_true, positive))
+                # PR-AUC (key on imbalanced data) and the Brier score (probability quality / calibration)
+                metrics["average_precision"] = float(average_precision_score(y_true, positive))
+                metrics["brier_score"] = float(brier_score_loss(y_true, positive))
             else:
                 metrics["roc_auc"] = float(roc_auc_score(y_true, y_proba, multi_class="ovr", average="weighted"))
             metrics["log_loss"] = float(log_loss(y_true, y_proba))

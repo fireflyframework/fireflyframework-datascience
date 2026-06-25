@@ -246,6 +246,22 @@ Each `LeaderboardEntry` holds `model_name`, `params`, `cv_score`, and `metric`, 
     linear                   roc_auc=0.9886
     ```
 
+## Probability calibration
+
+Tree and boosting models often produce over-confident probabilities. For risk- or cost-sensitive
+decisions, calibrate the winner so its probabilities are trustworthy — pass `calibrate=True`:
+
+```python
+result = AutoML(calibrate=True).fit(train)        # wraps the winner in cross-validated calibration
+report = result.evaluate(test)
+print(report.metrics["brier_score"])              # lower is better-calibrated
+```
+
+`calibrate` wraps the selected classifier in a `CalibratorPort` (default: scikit-learn
+`CalibratedClassifierCV`, isotonic, cross-fit) after model selection — classification only, off by
+default. The evaluator also reports **`average_precision`** (PR-AUC, important on imbalanced data) and
+**`brier_score`** (probability quality) for binary tasks alongside `roc_auc`/`accuracy`.
+
 ## See also
 
 - [Datasets and loaders](datasets.md) — build the `Dataset` you feed to `fit`.
