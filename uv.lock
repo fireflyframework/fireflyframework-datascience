@@ -1997,7 +1997,7 @@ wheels = [
 [[package]]
 name = "fireflyframework-agentic"
 version = "26.6.13"
-source = { git = "https://github.com/fireflyframework/fireflyframework-agentic?branch=main#161379f356d2ec67da7660d05fe8ed29bf6b082a" }
+source = { git = "https://github.com/fireflyframework/fireflyframework-agentic?rev=main#161379f356d2ec67da7660d05fe8ed29bf6b082a" }
 dependencies = [
     { name = "genai-prices" },
     { name = "httpx" },
@@ -2092,6 +2092,7 @@ full = [
     { name = "peft" },
     { name = "polars" },
     { name = "scikit-learn" },
+    { name = "sentencepiece" },
     { name = "tabpfn" },
     { name = "torch" },
     { name = "torchvision" },
@@ -2108,6 +2109,7 @@ lineage = [
 nlp = [
     { name = "datasets" },
     { name = "peft" },
+    { name = "sentencepiece" },
     { name = "transformers" },
     { name = "trl" },
 ]
@@ -2162,8 +2164,8 @@ requires-dist = [
     { name = "click", specifier = ">=8.1.7" },
     { name = "datasets", marker = "extra == 'nlp'", specifier = ">=3.0.0" },
     { name = "feast", marker = "extra == 'featurestore'", specifier = ">=0.40.0" },
-    { name = "fireflyframework-agentic", git = "https://github.com/fireflyframework/fireflyframework-agentic?branch=main" },
-    { name = "fireflyframework-agentic", extras = ["script-execution", "embeddings", "openai-embeddings", "vectorstores-chroma"], marker = "extra == 'genai'", git = "https://github.com/fireflyframework/fireflyframework-agentic?branch=main" },
+    { name = "fireflyframework-agentic", git = "https://github.com/fireflyframework/fireflyframework-agentic?rev=main" },
+    { name = "fireflyframework-agentic", extras = ["script-execution", "embeddings", "openai-embeddings", "vectorstores-chroma"], marker = "extra == 'genai'" },
     { name = "fireflyframework-datascience", extras = ["tabular", "tabfm", "automl", "dl", "nlp", "tracking", "validation", "featurestore", "serving", "lineage", "orchestration", "data", "genai"], marker = "extra == 'full'" },
     { name = "fireflyframework-datascience", extras = ["tabular", "tabfm", "automl", "tracking", "validation", "data"], marker = "extra == 'automl-stack'" },
     { name = "lightgbm", marker = "extra == 'tabular'", specifier = ">=4.5.0" },
@@ -2182,6 +2184,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "rich", specifier = ">=13.7.0" },
     { name = "scikit-learn", marker = "extra == 'tabular'", specifier = ">=1.5.0" },
+    { name = "sentencepiece", marker = "extra == 'nlp'", specifier = ">=0.2.0" },
     { name = "tabpfn", marker = "extra == 'tabfm'", specifier = ">=2.0.0" },
     { name = "torch", marker = "extra == 'dl'", specifier = ">=2.4.0" },
     { name = "torchvision", marker = "extra == 'dl'", specifier = ">=0.19.0" },
