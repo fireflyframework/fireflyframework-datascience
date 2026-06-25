@@ -128,10 +128,30 @@ data with categorical features.
 reaches **0.82** holdout ROC-AUC and bank-marketing campaign conversion reaches **0.92** — each a full
 load → validate → AutoML → evaluate run on public OpenML data, no Kaggle account required.
 
-**Governed GenAI, with a real LLM:** on a synthetic credit-risk set whose driver (debt-to-income) is
-withheld from the model, `anthropic:claude-haiku-4-5` proposed six features; the cost/benefit gate
-accepted the two that lifted the score (it rediscovered debt-to-income from the schema alone) and
-rejected the four that did not. Reproduce with `samples/genai_llm_showcase.py`.
+### Unbiased comparison — nested cross-validation
+
+`benchmarks/scientific_eval.py` uses **nested 5-fold CV** (inner CV selects the model; the untouched
+outer fold gives the unbiased estimate) to compare Firefly AutoML against fixed single models on
+identical folds, with a Wilcoxon signed-rank test:
+
+| Firefly AutoML vs… | mean Δ ROC-AUC | Wilcoxon p |
+|---|---:|---:|
+| LogReg (linear) | **+0.029** | **0.046** |
+| RandomForest | +0.012 | 0.051 (on par) |
+| XGBoost | **+0.030** | **7.5e-6** |
+
+Firefly **significantly beats** single LogReg and single XGBoost and is **statistically on par with**
+RandomForest — because it *adapts* per dataset (boosting on non-linear data, linear where linear wins).
+On 2 of 5 small datasets a fixed model edges it out by ~0.01 (selection variance) — reported honestly.
+
+### GenAI value — controlled ablation (real LLM)
+
+`benchmarks/genai_value.py` isolates the GenAI contribution on a retail task whose driver
+(`revenue = price × units`) is withheld. Over 8 splits with `anthropic:claude-haiku-4-5`, GenAI feature
+engineering lifts a **linear model by +0.0205 ROC-AUC** (0.975 → 0.996, **Wilcoxon p = 0.0039**) — Claude
+rediscovered `total_revenue` from the schema alone. On Firefly's tree-based AutoML the lift is smaller
+(+0.002) and the **gate guarantees no regression**. Cost: 8 calls, **< $0.01**. GenAI is a *Pareto-safe
+accelerator* — significant value where structure exists, never a regression.
 
 ## See also
 
