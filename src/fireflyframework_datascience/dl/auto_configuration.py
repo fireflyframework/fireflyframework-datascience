@@ -20,6 +20,13 @@ class DLAutoConfiguration:
 
         return MLPTrainer()
 
+    @bean(name="torch_tabular_trainer")
+    @conditional_on_class("torch")
+    def torch_tabular(self) -> DLTrainerPort:
+        from fireflyframework_datascience.dl.adapters import TorchTabularTrainer
+
+        return TorchTabularTrainer()
+
     @bean(name="tabpfn_predictor")
     @conditional_on_class("tabpfn")
     def tabpfn_predictor(self) -> TabFMPort:

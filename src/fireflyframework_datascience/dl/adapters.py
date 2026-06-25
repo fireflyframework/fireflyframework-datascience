@@ -73,13 +73,36 @@ class TorchTabularTrainer:
         return task in _CLASSIFICATION or task is TaskType.REGRESSION
 
     def fit(self, dataset: Dataset) -> Model:
+        import numpy as np
+
+        from fireflyframework_datascience.preprocessing import build_preprocessor
+
         try:
-            import torch  # type: ignore[import-not-found, import-untyped]  # noqa: F401
+            from fireflyframework_datascience.dl._torch_impl import TorchEstimator, train_tabular
         except ImportError as exc:  # pragma: no cover - exercised only without the extra
             raise AdapterUnavailableError("TorchTabularTrainer", "dl") from exc
-        # Full training-loop implementation lives behind the dl extra and is covered by the nightly
-        # integration suite; the contract is identical to MLPTrainer (returns a fitted Model).
-        raise NotImplementedError("TorchTabularTrainer requires the 'dl' extra; see the nightly DL suite.")
+
+        preprocessor = build_preprocessor(dataset.X)
+        matrix = preprocessor.fit_transform(dataset.X) if preprocessor is not None else dataset.X.to_numpy()
+
+        is_classification = dataset.task in _CLASSIFICATION
+        if is_classification:
+            classes, y_encoded = np.unique(dataset.y, return_inverse=True)
+            out_dim = int(len(classes))
+        else:
+            classes, y_encoded, out_dim = None, np.asarray(dataset.y, dtype="float32"), 1
+
+        model = train_tabular(
+            matrix,
+            y_encoded,
+            is_classification=is_classification,
+            out_dim=out_dim,
+            epochs=self._epochs,
+            hidden=self._hidden,
+            lr=self._lr,
+        )
+        estimator = TorchEstimator(preprocessor, model, classes, is_classification)
+        return Model("torch_tabular", estimator, dataset.task, list(dataset.feature_names))
 
 
 __all__ = ["MLPTrainer", "TabPFNPredictor", "TorchTabularTrainer"]

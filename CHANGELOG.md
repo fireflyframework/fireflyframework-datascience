@@ -17,10 +17,11 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ### SP4 — Deep learning & tabular foundation models
 
-- **`DLTrainerPort` / `TabFMPort`** ports; **`MLPTrainer`** (scikit-learn MLP) is a *verified* neural
-  reference. **`TabPFNPredictor`** (`tabfm` extra) and **`TorchTabularTrainer`** (`dl` extra) are gated
-  adapters on the same contract — the integration point for PyTorch Lightning + HuggingFace +
-  distributed (Accelerate/FSDP/DDP) + PEFT/TRL, verified under the nightly suite, not the PR gate.
+- **`DLTrainerPort` / `TabFMPort`** ports with three adapters: **`MLPTrainer`** (scikit-learn) and a
+  **real `TorchTabularTrainer`** — a PyTorch **Lightning** MLP (`dl` extra) verified on CPU for
+  classification and regression — plus **`TabPFNPredictor`** (`tabfm` extra; needs a TabPFN license
+  token). Torch/TabPFN tests skip gracefully when the extra/token is absent. This is the integration
+  point for HuggingFace + distributed (Accelerate/FSDP/DDP) + PEFT/TRL on the same contract.
 
 ### SP5 — Serving, MLOps breadth & the Lumen sample
 

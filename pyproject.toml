@@ -109,7 +109,7 @@ force-exclude = true
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "TC", "PLC0415"]
-ignore = ["E501", "TC001", "TC002", "TC003", "UP040", "UP046", "UP047", "B008", "N803", "N806"]
+ignore = ["E501", "TC001", "TC002", "TC003", "UP040", "UP046", "UP047", "B008", "N803", "N806", "N812"]
 
 [tool.ruff.lint.per-file-ignores]
 # The DataScience domain layer lazy-imports optional heavy dependencies (pandas, scikit-learn,
@@ -147,6 +147,7 @@ extraPaths = ["src"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
+addopts = "-m 'not nightly and not integration'"
 markers = [
     "nightly: long-running tests (benchmarks, real LLM/GPU/Kaggle); excluded from the PR gate.",
     "integration: real-backend tests (testcontainers / real ML libs); excluded from the fast gate.",
