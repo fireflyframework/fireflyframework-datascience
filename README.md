@@ -74,9 +74,9 @@ rediscovering a withheld driver (`revenue = price × units`) from the schema —
 guarantees it never regresses, at **< $0.01**. Every number is reproducible — see the
 [benchmark results](benchmarks/RESULTS.md).
 
-> 📄 **For business & transformation leaders:** a polished
-> [Strategic Introduction (PDF)](docs/brief/firefly-datascience-strategic-introduction.pdf) frames the
-> value without the engineering detail.
+> 📄 **The whole story in one document:** **[The Complete Guide (PDF)](docs/brief/firefly-datascience-complete-guide.pdf)**
+> combines the executive summary and strategic case with the architecture, a full hands-on tutorial,
+> and the benchmark evidence — for both leaders and engineers.
 
 ## Quick start
 

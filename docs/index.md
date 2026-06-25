@@ -37,11 +37,12 @@ swappability, and security by default.
   <img src="img/architecture.svg" alt="Firefly DataScience architecture: GenAI proposes, a classical engine decides, behind hexagonal ports" width="100%">
 </p>
 
-!!! tip "Business or transformation leader?"
+!!! tip "Want the whole story in one document?"
 
-    A polished [Strategic Introduction (PDF)](brief/firefly-datascience-strategic-introduction.pdf)
-    frames the value — faster time-to-value, governed GenAI, no lock-in — without the engineering
-    detail.
+    **[The Complete Guide (PDF)](brief/firefly-datascience-complete-guide.pdf)** combines the executive
+    summary and strategic case (faster time-to-value, governed GenAI, no lock-in) with the full
+    architecture, a hands-on tutorial, and the benchmark evidence — one document for both leaders and
+    engineers.
 
 ## Why Firefly DataScience?
 
