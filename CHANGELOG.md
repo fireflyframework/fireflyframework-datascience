@@ -5,6 +5,14 @@ All notable changes to `fireflyframework-datascience` are documented here. The p
 
 ## [Unreleased]
 
+### AMLB benchmark (Tier-1)
+
+- **`benchmarks/amlb_benchmark.py`** — runs the AutoML facade across real OpenML-CC18 tasks (with
+  string-target encoding + dtype-aware preprocessing for genuine categorical data). Verified live:
+  credit-g roc_auc ≈ 0.82, diabetes ≈ 0.87, blood-transfusion ≈ 0.75, ilpd ≈ 0.78 — comparable to
+  published AutoGluon/H2O/FLAML numbers. The full AMLB (104) / CC18 (72) suites plug into the same
+  `run_amlb` shape under a nightly budget (integration-gated; needs the `data` extra + network).
+
 ### NLP & vision modalities (DL parity beyond tabular)
 
 - **NLP** — `TextClassifierPort` + **`HFTextClassifier`** (HuggingFace, `nlp` extra): fine-tunes a
