@@ -11,8 +11,11 @@ use_directory_urls: false
 
 theme:
   name: material
-  logo: img/banner.svg
-  favicon: img/banner.svg
+  logo: img/logo.svg
+  favicon: img/favicon.svg
+  font:
+    text: Inter
+    code: JetBrains Mono
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -58,6 +61,9 @@ markdown_extensions:
 
 plugins:
   - search
+
+extra_css:
+  - stylesheets/firefly.css
 
 nav:
   - Home: index.md

@@ -1,0 +1,220 @@
+/* Firefly DataScience — docs theme.
+ *
+ * Brand: cyan/teal = the classical/data core; amber firefly = the gated GenAI accelerator.
+ * Boldness is spent in one place — amber appears ONLY in the `firefly` admonition that marks the
+ * recurring thesis ("the LLM proposes; the classical engine decides"). Everything else is cyan.
+ *
+ * Typography: Maven Pro (display/headings/nav) · Inter (body, via theme.font) · JetBrains Mono
+ * (code, via theme.font). Maven Pro is imported here and applied to headings only.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@500;600;700;800&display=swap');
+
+/* ---- Brand tokens --------------------------------------------------------------------------- */
+:root {
+  --ff-display: "Maven Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ff-cyan: #06b6d4;
+  --ff-cyan-deep: #0891b2;
+  --ff-cyan-light: #67e8f9;
+  --ff-cyan-xlight: #d6fbff;
+  --ff-amber: #f6a821;
+  --ff-sky-1: #06121a;
+  --ff-sky-2: #0a1b22;
+  --ff-sky-3: #071419;
+}
+
+/* Cyan accent for both schemes (primary is set to `cyan` in mkdocs.yml; we refine the accents). */
+[data-md-color-scheme="default"] {
+  --md-accent-fg-color: var(--ff-cyan-deep);
+  --md-typeset-a-color: var(--ff-cyan-deep);
+  --ff-card-bg: #ffffff;
+  --ff-card-border: #cfe9ef;
+  --ff-rule: linear-gradient(90deg, var(--ff-cyan-light), rgba(34, 211, 238, 0.05));
+}
+[data-md-color-scheme="slate"] {
+  --md-accent-fg-color: var(--ff-cyan-light);
+  --md-typeset-a-color: var(--ff-cyan-light);
+  --md-default-bg-color: #0b1a20;
+  --md-code-bg-color: #0a1820;
+  --ff-card-bg: #0e2129;
+  --ff-card-border: #1d3a44;
+  --ff-rule: linear-gradient(90deg, var(--ff-cyan), rgba(34, 211, 238, 0.04));
+}
+
+/* ---- Typography ----------------------------------------------------------------------------- */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6,
+.md-header__title,
+.md-nav__title,
+.md-ellipsis {
+  font-family: var(--ff-display);
+  letter-spacing: -0.01em;
+}
+.md-typeset h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--md-default-fg-color);
+}
+.md-typeset h2 {
+  font-weight: 700;
+  margin-top: 2.4em;
+  padding-bottom: 0.25em;
+}
+/* Signature: a short cyan accent rule under h2, echoing the banner's accent rule. */
+.md-typeset h2::after {
+  content: "";
+  display: block;
+  width: 2.4rem;
+  height: 2.5px;
+  margin-top: 0.45rem;
+  border-radius: 2px;
+  background: var(--ff-rule);
+}
+.md-typeset h3 { font-weight: 700; }
+/* The header site-title carries the brand voice. */
+.md-header__title { font-weight: 700; font-size: 1.05rem; }
+
+/* ---- Hero (homepage) ------------------------------------------------------------------------ */
+.firefly-hero {
+  margin: 0.4rem 0 2.2rem;
+}
+.firefly-hero img {
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 14px 40px -18px rgba(6, 182, 212, 0.55), 0 2px 0 rgba(255, 255, 255, 0.03) inset;
+  display: block;
+}
+.firefly-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.3rem;
+  align-items: center;
+}
+/* Primary CTA — filled cyan; secondary — outlined. */
+.md-typeset .firefly-cta .md-button {
+  border-radius: 9px;
+  font-family: var(--ff-display);
+  font-weight: 600;
+  letter-spacing: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.md-typeset .firefly-cta .md-button--primary {
+  background: var(--ff-cyan-deep);
+  border-color: var(--ff-cyan-deep);
+  color: #fff;
+}
+.md-typeset .firefly-cta .md-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px -10px rgba(6, 182, 212, 0.7);
+  background: var(--ff-cyan);
+  border-color: var(--ff-cyan);
+  color: #fff;
+}
+
+/* ---- Grid cards ----------------------------------------------------------------------------- */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid > .card {
+  border: 1px solid var(--ff-card-border);
+  border-radius: 13px;
+  padding: 1.05rem 1.15rem;
+  background: var(--ff-card-bg);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover,
+.md-typeset .grid > .card:hover {
+  /* Firefly glow on hover. */
+  transform: translateY(-3px);
+  border-color: var(--ff-cyan);
+  box-shadow: 0 12px 30px -16px rgba(6, 182, 212, 0.6);
+}
+.md-typeset .grid.cards .twemoji,
+.md-typeset .grid.cards :is(.lg, .xl) {
+  color: var(--ff-cyan-deep);
+}
+[data-md-color-scheme="slate"] .md-typeset .grid.cards .twemoji {
+  color: var(--ff-cyan-light);
+}
+.md-typeset .grid.cards > ul > li > hr {
+  margin: 0.7rem 0;
+  border-color: var(--ff-card-border);
+}
+
+/* ---- Code, tables, blockquotes -------------------------------------------------------------- */
+.md-typeset pre > code {
+  border-radius: 10px;
+}
+.md-typeset code {
+  border-radius: 5px;
+}
+.md-typeset table:not([class]) {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--ff-card-border);
+  box-shadow: none;
+}
+.md-typeset table:not([class]) th {
+  background: rgba(6, 182, 212, 0.08);
+  font-family: var(--ff-display);
+  font-weight: 700;
+}
+.md-typeset table:not([class]) tr:hover {
+  background: rgba(6, 182, 212, 0.04);
+}
+.md-typeset blockquote {
+  border-left-color: var(--ff-cyan);
+}
+
+/* ---- Signature: the `firefly` admonition (amber lightbulb) ---------------------------------- *
+ * Use `!!! firefly "…"` (or `??? firefly`) for the "LLM proposes; classical decides" insight.    */
+:root {
+  --md-admonition-icon--firefly: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2A7 7 0 0 0 5 9c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>');
+}
+.md-typeset .admonition.firefly,
+.md-typeset details.firefly {
+  border-color: var(--ff-amber);
+  box-shadow: 0 4px 18px -12px rgba(246, 168, 33, 0.6);
+}
+.md-typeset .firefly > .admonition-title,
+.md-typeset .firefly > summary {
+  background-color: rgba(246, 168, 33, 0.12);
+}
+.md-typeset .firefly > .admonition-title::before,
+.md-typeset .firefly > summary::before {
+  background-color: var(--ff-amber);
+  -webkit-mask-image: var(--md-admonition-icon--firefly);
+          mask-image: var(--md-admonition-icon--firefly);
+}
+
+/* ---- Footer / misc -------------------------------------------------------------------------- */
+.md-footer-meta {
+  background-color: var(--ff-sky-1);
+}
+.md-typeset hr {
+  border-bottom-color: var(--ff-card-border);
+}
+
+/* ---- Quality floor: focus + reduced motion -------------------------------------------------- */
+.md-typeset .firefly-cta .md-button:focus-visible,
+.md-typeset .grid.cards > ul > li:focus-within {
+  outline: 2px solid var(--ff-cyan);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset .firefly-cta .md-button,
+  .md-typeset .grid.cards > ul > li,
+  .md-typeset .grid.cards > ol > li {
+    transition: none;
+  }
+  .md-typeset .firefly-cta .md-button:hover,
+  .md-typeset .grid.cards > ul > li:hover {
+    transform: none;
+  }
+}
