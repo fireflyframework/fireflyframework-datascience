@@ -242,6 +242,25 @@ gate = CostBenefitGate(min_gain=0.005)
 engineer = GenAIFeatureEngineer(proposer, gate=gate)
 ```
 
+## Auditing the decisions
+
+The accepted/rejected trail lives on the returned `EngineeringResult`, but for governance you usually
+want it **persisted**. Wire an `AuditLogPort` and every gate decision — accepted *or* rejected, with the
+feature name, the code, the score, the baseline and the reason — is written durably, one record per
+proposal:
+
+```python
+from fireflyframework_datascience.features.audit import JsonlAuditLog
+from fireflyframework_datascience.features.genai import GenAIFeatureEngineer
+
+engineer = GenAIFeatureEngineer(proposer, audit_log=JsonlAuditLog("audit/genai-decisions.jsonl"))
+engineer.engineer(dataset)
+# audit/genai-decisions.jsonl now holds one JSON line per decision — greppable and append-only.
+```
+
+This is what makes "every GenAI decision is logged and auditable" literally true: a risk or compliance
+reviewer can reconstruct *why* each feature was kept or dropped, long after the run.
+
 ## See also
 
 - [Datasets](datasets.md) — the `Dataset` the engineer consumes and `with_features` returns.

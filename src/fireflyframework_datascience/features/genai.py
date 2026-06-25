@@ -23,6 +23,7 @@ from fireflyframework_datascience.features import (
     FeatureProposer,
     RejectedFeature,
 )
+from fireflyframework_datascience.features.audit import AuditLogPort
 from fireflyframework_datascience.features.executor import FeatureCodeExecutor, FeatureExecutionError
 
 _CLASSIFICATION = {TaskType.BINARY, TaskType.MULTICLASS, TaskType.CLASSIFICATION}
@@ -47,6 +48,7 @@ class GenAIFeatureEngineer:
         evaluator: MetricsEvaluatorPort | None = None,
         executor: FeatureCodeExecutor | None = None,
         gate: CostBenefitGate | None = None,
+        audit_log: AuditLogPort | None = None,
         scorer_estimator: Callable[[TaskType], Any] | None = None,
         cv: int = 5,
         max_features: int = 5,
@@ -56,6 +58,7 @@ class GenAIFeatureEngineer:
         self._evaluator = evaluator or _default_evaluator()
         self._executor = executor or FeatureCodeExecutor()
         self._gate = gate or CostBenefitGate()
+        self._audit_log = audit_log
         self._scorer_estimator_factory = scorer_estimator
         self._cv = cv
         self._max_features = max_features
@@ -78,16 +81,19 @@ class GenAIFeatureEngineer:
                 candidate = self._executor.execute(proposal.code, working)
             except FeatureExecutionError as exc:
                 rejected.append(RejectedFeature(proposal, str(exc)))
+                self._audit(dataset, proposal, "rejected", float("nan"), baseline, metric, str(exc))
                 continue
             candidate_score = self._cv_score(candidate, dataset.y, task, scoring)
             if self._gate.accepts(current, candidate_score):
                 working = candidate
-                accepted.append(AcceptedFeature(proposal, candidate_score, candidate_score - current))
+                gain = candidate_score - current
+                accepted.append(AcceptedFeature(proposal, candidate_score, gain))
+                self._audit(dataset, proposal, "accepted", candidate_score, baseline, metric, f"gain {gain:+.4f}")
                 current = candidate_score
             else:
-                rejected.append(
-                    RejectedFeature(proposal, f"no lift ({candidate_score:.4f} <= {current:.4f})", candidate_score)
-                )
+                reason = f"no lift ({candidate_score:.4f} <= {current:.4f})"
+                rejected.append(RejectedFeature(proposal, reason, candidate_score))
+                self._audit(dataset, proposal, "rejected", candidate_score, baseline, metric, reason)
 
         return EngineeringResult(
             dataset=dataset.with_features(working),
@@ -96,6 +102,32 @@ class GenAIFeatureEngineer:
             baseline_score=baseline,
             final_score=current,
             metric=metric,
+        )
+
+    def _audit(
+        self,
+        dataset: Dataset,
+        proposal: FeatureProposal,
+        decision: str,
+        score: float,
+        baseline: float,
+        metric: str,
+        detail: str,
+    ) -> None:
+        """Persist one gate decision to the audit log (no-op if none is wired)."""
+        if self._audit_log is None:
+            return
+        self._audit_log.record(
+            {
+                "dataset": dataset.name,
+                "feature": proposal.name,
+                "code": proposal.code,
+                "decision": decision,
+                "score": score,
+                "baseline": baseline,
+                "metric": metric,
+                "detail": detail,
+            }
         )
 
     def _cv_score(self, X: Any, y: Any, task: TaskType, scoring: str) -> float:
