@@ -28,10 +28,14 @@ class FeaturesAutoConfiguration:
 
         proposer = AgentFeatureProposer(model=config.genai.default_model)
         gate = CostBenefitGate(min_gain=0.0)
-        # Honor the declared execution config: a wall-clock timeout and the sandbox tier (in-process
-        # 'monty'/'local' run the restricted executor; 'docker'/'e2b' fail until those adapters land).
+        # Honor the FULL declared execution config — do not silently drop a control. Timeout +
+        # require_approval (fail-closed HITL) + sandbox tier (in-process 'monty'/'local' run the
+        # restricted executor; 'docker'/'e2b' fail until those adapters land). With the default
+        # require_approval=True and no approver wired, automated GenAI fail-closes: set
+        # execution.require_approval=False (or wire an approver) to run it unattended.
         executor = FeatureCodeExecutor(
             timeout_seconds=config.execution.timeout_seconds,
+            require_approval=config.execution.require_approval,
             sandbox=config.execution.sandbox,
         )
         return GenAIFeatureEngineer(proposer, gate=gate, executor=executor)

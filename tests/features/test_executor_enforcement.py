@@ -54,3 +54,45 @@ def test_executor_defaults_unchanged() -> None:
     # default executor: no timeout, no approval, in-process — preserves existing behaviour
     out = FeatureCodeExecutor().execute("df['b'] = df['a'] * 2", pd.DataFrame({"a": [1, 2]}))
     assert list(out["b"]) == [2, 4]
+
+
+def test_auto_config_wires_full_execution_config_into_executor() -> None:
+    # The GenAI auto-config must not silently drop any execution control: timeout, sandbox AND
+    # require_approval are threaded from config into the wired executor.
+    from fireflyframework_datascience import FireflyDataScienceApplication
+    from fireflyframework_datascience.core.config import FireflyDataScienceConfig
+    from fireflyframework_datascience.features import FeatureEngineerPort
+
+    config = FireflyDataScienceConfig()
+    config.genai.enabled = True
+    config.execution.require_approval = False  # explicit unattended opt-out
+    config.execution.sandbox = "local"
+    config.execution.timeout_seconds = 30
+    app = FireflyDataScienceApplication.run(config=config, print_output=False)
+
+    engineer = app.container.resolve_optional(FeatureEngineerPort)
+    assert engineer is not None
+    executor = engineer._executor  # type: ignore[attr-defined]
+    assert executor._require_approval is False
+    assert executor._sandbox == "local"
+    assert executor._timeout_seconds == 30
+
+
+def test_auto_config_default_is_fail_closed_hitl() -> None:
+    # With the default execution config (require_approval=True) and no approver wired, the wired
+    # executor fail-closes — the secure-by-default posture the docs describe.
+    from fireflyframework_datascience import FireflyDataScienceApplication
+    from fireflyframework_datascience.core.config import FireflyDataScienceConfig
+    from fireflyframework_datascience.features import FeatureEngineerPort
+
+    config = FireflyDataScienceConfig()
+    config.genai.enabled = True
+    app = FireflyDataScienceApplication.run(config=config, print_output=False)
+
+    engineer = app.container.resolve_optional(FeatureEngineerPort)
+    assert engineer is not None
+    executor = engineer._executor  # type: ignore[attr-defined]
+    assert executor._require_approval is True
+    assert executor._approver is None  # no approver shipped → fail-closed until one is wired
+    with pytest.raises(FeatureExecutionError, match="approval"):
+        executor.execute("df['b'] = df['a'] + 1", pd.DataFrame({"a": [1, 2]}))
