@@ -50,6 +50,25 @@ swappability, and security by default.
 - **Firefly-native.** Auto-configuration, dependency injection, a startup banner + wiring summary,
   CalVer, and the same CI gates as the rest of the Firefly Framework.
 
+## Why it matters
+
+Beyond the engineering, Firefly DataScience is designed to change five things that decide whether data
+science actually delivers business value:
+
+- **Faster time-to-value** — AutoML chooses and tunes the model and an agentic loop iterates, so a
+  benchmarked, production-grade model is *days* of work, not quarters.
+- **Governed GenAI** — the LLM proposes, a deterministic engine measures, and a cost/benefit gate keeps
+  only what beats the baseline. Every decision is logged and auditable; no unproven AI output ships.
+- **No vendor lock-in** — open (Apache-2.0) and hexagonal: every ML library *and every LLM provider* is
+  a swappable adapter, and the whole framework is self-hostable.
+- **Lower cost & risk** — classical-first (cheap, reproducible) with secure-by-default execution of any
+  generated code; generative AI is used only where it measurably pays.
+- **Production-ready** — serving, data validation, lineage and real benchmarks are built in, not bolted on.
+
+> 📄 **For business & transformation leaders:** a polished
+> [Strategic Introduction (PDF)](docs/brief/firefly-datascience-strategic-introduction.pdf) frames the
+> value without the engineering detail.
+
 ## Quick start
 
 ```bash
