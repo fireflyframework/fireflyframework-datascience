@@ -46,7 +46,7 @@ class AutoML:
         ensemble: bool = False,
         ensemble_size: int = 3,
         ensemble_impl: EnsemblePort | None = None,
-        cv: int = 5,
+        cv: int | Any = 5,
         n_trials: int = 20,
         random_state: int = 42,
     ) -> None:
