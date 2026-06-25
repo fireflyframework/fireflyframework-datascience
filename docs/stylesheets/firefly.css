@@ -79,6 +79,19 @@
 .md-header__title { font-weight: 700; font-size: 1.05rem; }
 
 /* ---- Hero (homepage) ------------------------------------------------------------------------ */
+/* Visually-hidden but accessible — gives the homepage a real <h1> (so MkDocs doesn't inject a
+ * redundant "Home" title) while the banner serves as the visual masthead. */
+.firefly-sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .firefly-hero {
   margin: 0.4rem 0 2.2rem;
 }
