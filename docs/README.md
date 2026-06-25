@@ -24,8 +24,9 @@
 |---|---|
 | [Architecture](architecture.md) | the five layers, hexagonal ports/adapters, the DI container, auto-configuration |
 | [Datasets](datasets.md) | the `Dataset` container, loaders, `train_test_split`, task inference |
-| [Classical AutoML](automl.md) | the `AutoML` facade, trainers, search policies, metrics, the leaderboard |
-| [GenAI Feature Engineering](genai-features.md) | propose → execute → measure → gate; the `CostBenefitGate` |
+| [Classical AutoML](automl.md) | the `AutoML` facade, trainers, search policies, metrics, the leaderboard, calibration, ensembling, PR-AUC selection & CV strategies |
+| [Explainability](explainability.md) | deterministic global + local feature importances (permutation, SHAP) |
+| [GenAI Feature Engineering](genai-features.md) | propose → execute → measure → gate; the `CostBenefitGate`; the persisted audit trail |
 | [Agentic ML-Engineering Loop](agentic-loop.md) | propose → train → verify → reflect → select |
 | [Deep Learning & TabFM](deep-learning.md) | sklearn-MLP, PyTorch Lightning, HuggingFace, TabPFN |
 | [Serving & Lineage](serving.md) | the in-process server, gated backends, lineage |
